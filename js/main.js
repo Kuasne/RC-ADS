@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Animações
     setupAnimations();
 });
+<<<<<<< HEAD
 document.addEventListener('DOMContentLoaded', function() {
     // ...existing code...
 
@@ -38,6 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ...existing code...
 });
+=======
+
+>>>>>>> 5646ef86dbb54e09cd0504591e623f8275b1227b
 function initializeApp() {
     // Configurar data mínima para agendamento (hoje)
     const dataInput = document.getElementById('data');

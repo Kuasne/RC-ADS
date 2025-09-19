@@ -1,0 +1,88 @@
+---
+config:
+  theme: neo
+  look: neo
+title: Sistema de agendamento de provas - UNIFAA
+id: 72980de7-c58b-4ee1-b569-b90e22ed939b
+---
+classDiagram
+direction TB
+    class User {
+		%% Usuário genérico do sistema
+		%% Podendo ser aluno, polo ou admin
+	    -id: string %% Matrícula
+	    -name: string
+	    -email: string
+	    -password: string
+	    +login() : bool
+	    +logout() : void
+    }
+    class Student {
+		%% Aluno (herda de User)
+	    %% -studentId: User(id)
+	    -course: string
+		-poloId: string
+	    +requestExamBooking(exam: Exam, date: Date) : Booking
+	    +cancelBooking(booking: Booking) : bool
+	    +rescheduleBooking(booking: Booking, newDate: Date) : bool
+    }
+    class Admin {
+		%% Administrador (herda de User)
+	    %% -adminId: User(id)
+	    +approveBooking(booking: Booking) : bool
+	    +manageExams() : void
+	    +generateReports() : Report
+    }
+    class Polo {
+		%% Polo educacional (herda de User, mas só consulta agendamentos)
+	    %% -poloId: User(id)
+		-location: string
+		-capacity: int
+	    +viewScheduledExams(): List~Booking~ %% retorna uma lista de agendamentos
+    }
+    class Exam {
+		%% Prova
+	    -examId: int
+	    -subject: string
+	    -date: Date
+	    +isAvailable() : bool
+    }
+    class Booking {
+		%% Agendamento de prova
+	    -bookingId: int
+	    -status: string  %% "Scheduled", "Cancelled", "Rescheduled"
+	    -createdAt: Date
+	    +confirm() : void
+	    +cancel() : void
+		+reschedule(newDate: Date) : bool
+    }
+    class Notification {
+		%% Notificação enviada ao aluno/admin/polo
+	    -notificationId: int
+	    -message: string
+	    -sentAt: Date
+	    +send(user: User) : void
+    }
+    class BookingSystem {
+		%% Sistema de Agendamento (padrão Facade): centraliza o gerenciamento de usuários, provas e agendamentos.
+	    -users: List~User~
+	    -exams: List~Exam~
+	    -bookings: List~Booking~
+	    +registerUser(user: User) : void
+	    +addExam(exam: Exam) : void
+	    +findAvailableExams() : List~Exam~
+    }
+
+	%% Relacionamentos
+    User <|-- Student
+	User <|-- Admin
+	User <|-- Polo
+	Student "1" --> "*" Booking : "creates"
+	Student "*" --> "1" Polo : "belongs to"
+	Booking "*" --> "1" Exam : "refers to"
+	Admin "1" --> "*" Exam : "manages"
+	BookingSystem "1" o-- "*" User
+	BookingSystem "1" o-- "*" Exam
+	BookingSystem "1" o-- "*" Booking
+	Booking "1" --> "*" Notification : "triggers"
+	Polo "1" --> "*" Booking : "views"

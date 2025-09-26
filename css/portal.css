@@ -5,7 +5,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #4CAF50 0%, #2196F3 100%);
+    background: linear-gradient(135deg, #0fab95 0%, #00a8cf 100%);
 }
 
 .container {
@@ -141,7 +141,7 @@ body {
     padding: 15px;
     border: none;
     border-radius: 8px;
-    background: linear-gradient(135deg, #4CAF50 0%, #2196F3 100%);
+    background: linear-gradient(135deg, #0fab95 0%, #00a8cf 100%);
     color: #FFFFFF;
     font-size: 1.1em;
     font-weight: 600;
@@ -155,7 +155,7 @@ body {
 }
 
 .forgot-password {
-    color: #4CAF50;
+    color: #000000;
     text-decoration: none;
     font-size: 0.9em;
     font-weight: 500;

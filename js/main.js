@@ -483,3 +483,198 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+let provas = [];
+
+        function agendarProva() {
+            const disciplina = document.getElementById('disciplina').value;
+            const data = document.getElementById('data').value;
+            const horario = document.getElementById('horario').value;
+
+            if (!disciplina || !data || !horario) {
+                alert('Por favor, preencha todos os campos obrigatórios!');
+                return;
+            }
+
+            // Verificar se a disciplina já foi agendada
+            const disciplinaJaAgendada = provas.find(prova => prova.disciplina === disciplina);
+            if (disciplinaJaAgendada) {
+                alert(`A disciplina ${document.getElementById('disciplina').selectedOptions[0].text} já foi agendada!`);
+                return;
+            }
+
+            // Verificar se já existe uma prova no mesmo horário e data
+            const conflito = provas.find(prova => prova.data === data && prova.horario === horario);
+            if (conflito) {
+                alert(`Já existe uma prova agendada para ${data} às ${document.getElementById('horario').selectedOptions[0].text}!`);
+                return;
+            }
+
+            const novaProva = {
+                id: Date.now(),
+                disciplina: disciplina,
+                disciplinaNome: document.getElementById('disciplina').selectedOptions[0].text,
+                data: data,
+                horario: horario,
+                horarioTexto: document.getElementById('horario').selectedOptions[0].text
+            };
+
+            provas.push(novaProva);
+            provas.sort((a, b) => new Date(a.data + ' ' + a.horario) - new Date(b.data + ' ' + b.horario));
+            
+            renderizarProvas();
+            atualizarEstatisticas();
+            atualizarOpcoesDisponiveis();
+            limparFormulario();
+            
+            alert('Prova agendada com sucesso!');
+        }
+
+        function renderizarProvas() {
+            const container = document.getElementById('provasAgendadas');
+            const emptyState = document.getElementById('emptyState');
+
+            if (provas.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            
+            container.innerHTML = provas.map(prova => {
+                const dataFormatada = new Date(prova.data + 'T00:00:00').toLocaleDateString('pt-BR');
+                const isProxima = isProximaProva(prova);
+                return `
+                    <div class="d-flex align-items-center justify-content-between p-3 border rounded mb-2 ${isProxima ? 'border-primary bg-light' : 'border-secondary'}">
+                        <div class="d-flex align-items-center">
+                            <div class="disciplina-circle me-3 ${getCoresDisciplina(prova.disciplina)}">
+                                ${prova.disciplinaNome.charAt(0)}
+                            </div>
+                            <div>
+                                <div class="fw-semibold">${prova.disciplinaNome}</div>
+                                <div class="text-muted small">📅 ${dataFormatada}</div>
+                                <div class="text-muted small">🕐 ${prova.horarioTexto}</div>
+                                ${isProxima ? '<span class="badge bg-primary mt-1">Próxima Prova</span>' : ''}
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge bg-success mb-2">Agendada</span>
+                            <button onclick="removerProva(${prova.id})" class="btn btn-sm btn-outline-danger ms-2" title="Remover">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getCoresDisciplina(disciplina) {
+            switch (disciplina) {
+                case 'matematica': return 'bg-matematica';
+                case 'portugues': return 'bg-portugues';
+                case 'historia': return 'bg-historia';
+                case 'geografia': return 'bg-geografia';
+                case 'ciencias': return 'bg-ciencias';
+                case 'fisica': return 'bg-fisica';
+                case 'quimica': return 'bg-quimica';
+                default: return 'bg-default';
+            }
+        }
+
+        function isProximaProva(prova) {
+            const agora = new Date();
+            const dataProva = new Date(prova.data + 'T' + prova.horario + ':00');
+            const proximasProvas = provas.filter(p => {
+                const dataP = new Date(p.data + 'T' + p.horario + ':00');
+                return dataP > agora;
+            });
+            if (proximasProvas.length === 0) return false;
+            const proximaProvaData = new Date(proximasProvas[0].data + 'T' + proximasProvas[0].horario + ':00');
+            return dataProva.getTime() === proximaProvaData.getTime();
+        }
+
+        function removerProva(id) {
+            if (confirm('Tem certeza que deseja remover esta prova?')) {
+                provas = provas.filter(prova => prova.id !== id);
+                renderizarProvas();
+                atualizarEstatisticas();
+                atualizarOpcoesDisponiveis();
+            }
+        }
+
+        function atualizarOpcoesDisponiveis() {
+            const selectDisciplina = document.getElementById('disciplina');
+            const selectHorario = document.getElementById('horario');
+            const inputData = document.getElementById('data');
+            const disciplinasAgendadas = provas.map(prova => prova.disciplina);
+            const opcoesDisciplina = selectDisciplina.querySelectorAll('option');
+            opcoesDisciplina.forEach(opcao => {
+                if (opcao.value && disciplinasAgendadas.includes(opcao.value)) {
+                    opcao.disabled = true;
+                    if (!opcao.textContent.includes(' (Indisponível)')) {
+                        opcao.textContent += ' (Indisponível)';
+                    }
+                } else if (opcao.value) {
+                    opcao.disabled = false;
+                    opcao.textContent = opcao.textContent.replace(' (Indisponível)', '');
+                }
+            });
+
+            function atualizarHorarios() {
+                const dataSelecionada = inputData.value;
+                if (!dataSelecionada) return;
+                const horariosOcupados = provas
+                    .filter(prova => prova.data === dataSelecionada)
+                    .map(prova => prova.horario);
+                const opcoesHorario = selectHorario.querySelectorAll('option');
+                opcoesHorario.forEach(opcao => {
+                    if (opcao.value && horariosOcupados.includes(opcao.value)) {
+                        opcao.disabled = true;
+                        if (!opcao.textContent.includes(' (Ocupado)')) {
+                            opcao.textContent += ' (Ocupado)';
+                        }
+                    } else if (opcao.value) {
+                        opcao.disabled = false;
+                        opcao.textContent = opcao.textContent.replace(' (Ocupado)', '');
+                    }
+                });
+            }
+            inputData.removeEventListener('change', atualizarHorarios);
+            inputData.addEventListener('change', atualizarHorarios);
+            atualizarHorarios();
+        }
+
+        function atualizarEstatisticas() {
+            document.getElementById('totalProvas').textContent = provas.length;
+            const disciplinasUnicas = new Set(provas.map(prova => prova.disciplina));
+            document.getElementById('disciplinasCount').textContent = disciplinasUnicas.size;
+            const agora = new Date();
+            const proximasProvas = provas.filter(prova => {
+                const dataProva = new Date(prova.data + 'T' + prova.horario + ':00');
+                return dataProva > agora;
+            });
+            if (proximasProvas.length > 0) {
+                const proximaData = new Date(proximasProvas[0].data + 'T00:00:00');
+                const diasRestantes = Math.ceil((proximaData - agora) / (1000 * 60 * 60 * 24));
+                document.getElementById('proximaProva').textContent = diasRestantes > 0 ? `${diasRestantes}d` : 'Hoje';
+            } else {
+                document.getElementById('proximaProva').textContent = '-';
+            }
+        }
+
+        function limparFormulario() {
+            document.getElementById('disciplina').value = '';
+            document.getElementById('data').value = '';
+            document.getElementById('horario').value = '';
+        }
+
+        
+
+        // Definir data mínima como hoje
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('data').min = new Date().toISOString().split('T')[0];
+            atualizarEstatisticas();
+            atualizarOpcoesDisponiveis();
+        });
+
+        

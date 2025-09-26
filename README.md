@@ -1,10 +1,10 @@
 teste- html,css e js básico.
 
-login aluno: aluno
+login aluno: E123
 senha: 123
 
-login adm: adm
+login adm: A123
 senha: 123
 
-login polo: polo
+login polo: P123
 senha: 123

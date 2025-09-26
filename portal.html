@@ -4,24 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal de Acesso UNIFAA</title>
-  <link rel="stylesheet" href="/css/portal.css">
-  <link rel="stylesheet" href="/js/portal.js">
-  <style>
-    .nav-button {
-      padding: 10px 20px;
-      margin: 5px;
-      border: 1px solid #ccc;
-      background: #f8f9fa;
-      cursor: pointer;
-      border-radius: 5px;
-      transition: all 0.3s;
-    }
-    .nav-button.active {
-      background: #1EAE5F;
-      color: white;
-      border-color: #1EAE5F;
-    }
-  </style>
+  <link rel="stylesheet" href="css/portal.css">
 </head>
 <body>
   <div class="container">
@@ -29,6 +12,7 @@
       <div class="logo-section">
         <img src="images/unifaa-logo.png" alt="Logo UNIFAA">
       </div>
+
       <h1 class="portal-title">Portal de Acesso</h1>
 
       <div class="navigation-buttons">
@@ -37,40 +21,22 @@
         <button class="nav-button" data-role="polo">Polo</button>
       </div>
 
-      <form class="login-form" id="loginForm">
+      <form class="login-form" id="loginForm" autocomplete="off" novalidate>
         <label for="username">Usuário</label>
         <input type="text" id="username" placeholder="Digite seu RA">
+
         <label for="password">Senha</label>
         <input type="password" id="password" placeholder="Digite sua senha">
+
         <button type="submit" class="login-button">Entrar</button>
       </form>
+
+      <div id="loginError" role="alert" aria-live="assertive"></div>
 
       <a href="#" class="forgot-password">Esqueci minha senha</a>
     </div>
   </div>
-    <script>
-      document.querySelectorAll(".nav-button").forEach(btn => {
-      btn.addEventListener("click", function() {
-        document.querySelectorAll(".nav-button").forEach(b => b.classList.remove("active"));
-        this.classList.add("active");
-        selectedRole = this.dataset.role;
-      });
-    });
 
-    // Redirecionar no login
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      // Aqui você pode validar usuário e senha antes do redirecionamento
-
-      if (selectedRole === "aluno") {
-        window.location.href = "dashboard.html";
-      } else if (selectedRole === "administrativo") {
-        window.location.href = "admin.html";
-      } else if (selectedRole === "polo") {
-        window.location.href = "dashboardpolo.html";
-      }
-    });
-    </script>
+  <script src="js/portal.js"></script>
 </body>
 </html>

@@ -26,26 +26,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // Funcionalidade do formulário de login
-    const loginForm = document.querySelector('.login-form');
-    loginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        
-        if (username && password) {
-            alert('Login realizado com sucesso!');
-        } else {
-            alert('Por favor, preencha todos os campos.');
-        }
-    });
-    
-    // Funcionalidade do link "Esqueci minha senha"
-    const forgotPasswordLink = document.querySelector('.forgot-password');
-    forgotPasswordLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        alert('Funcionalidade de recuperação de senha em desenvolvimento.');
-    });
 });

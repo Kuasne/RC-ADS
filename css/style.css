@@ -393,3 +393,21 @@ body {
         transform: scale(1);
     }
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .card-header-custom {
+            background: linear-gradient(135deg, #0fab95 0%, #00a8cf 100%);
+            color: #fff;
+        }
+        .disciplina-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }

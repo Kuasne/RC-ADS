@@ -8,33 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="css/style.css" rel="stylesheet" />
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .card-header-custom {
-            background: linear-gradient(135deg, #0fab95 0%, #00a8cf 100%);
-            color: #fff;
-        }
-        .disciplina-circle {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        .bg-matematica { background: #2563eb; }
-        .bg-portugues { background: #22c55e; }
-        .bg-historia { background: #eab308; }
-        .bg-geografia { background: #a21caf; }
-        .bg-ciencias { background: #14b8a6; }
-        .bg-fisica { background: #ef4444; }
-        .bg-quimica { background: #6366f1; }
-        .bg-default { background: #6b7280; }
-    </style>
 </head>
 
 <body class="dashboard-page">
@@ -96,7 +69,7 @@
                     </p>
                 </div>
                 <div class="col-md-4 text-end">
-                    <img src="images/estudantes.jpg" alt="Estudantes" class="img-fluid rounded" style="max-height: 120px" />
+                    <img src="images/estudantes.jpg" alt="Estudantes" class="img-fluid rounded" style="max-height: 200px" />
                 </div>
             </div>
 
@@ -108,7 +81,17 @@
                             <h3 class="card-title mb-0"><i class="bi bi-calendar-plus me-2"></i>Agendar Nova Prova</h3>
                         </div>
                         <div class="card-body">
-                            <h2 class="fs-5 mb-4">Dados do Agendamento</h2>
+                            <div class="mb-3">
+                                <label class="form-label">Polo</label>
+                                <select id="polo" class="form-select">
+                                    <option value="">Selecione o polo</option>
+                                    <option value="polo1">Sede - Valença</option>
+                                    <option value="polo2">Polo - Barra Mansa</option>
+                                    <option value="polo3">Polo - Barra do Pirai</option>
+                                    <option value="polo4">Polo - Petropolis</option>
+                                    <option value="polo5">Polo - Volta Redonda</option>
+                                </select>
+                            </div>
                             <form id="formAgendamento" onsubmit="event.preventDefault(); agendarProva();">
                                 <div class="mb-3">
     <label class="form-label">Disciplina</label>

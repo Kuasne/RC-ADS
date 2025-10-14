@@ -15,14 +15,14 @@ Este projeto é um sistema de agendamento de provas para o Centro Universitário
 Para fins de demonstração, criamos um prefixo para cada tipo de usuário sendo **E** para Estudante, **A** para Administrador e **P** para Pólo. A senha padrão para todos os perfis é **123**.
 
 * **Estudante/Aluno:**
-    => **Usuário:** `E123`
-    => **Senha:** `123`
+    * **Usuário:** `E123`
+    * **Senha:** `123`
 * **Administrador:**
-    => **Usuário:** `A123`
-    => **Senha:** `123`
+    * **Usuário:** `A123`
+    * **Senha:** `123`
 * **Polo:**
-    => **Usuário:** `P123`
-    => **Senha:** `123`
+    * **Usuário:** `P123`
+    * **Senha:** `123`
 
 ## 🛠️ Construído Com
 

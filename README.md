@@ -49,6 +49,3 @@ Para fins de demonstração, utilize as seguintes credenciais para acessar os di
 * [Nathália](https://github.com/n4th05)
 * [Vitor](https://github.com/ovitorleal) 
 
-## 📄 Licença
-
-Este projeto não possui uma licença definida.

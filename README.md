@@ -26,8 +26,8 @@ Para fins de demonstração, utilize as seguintes credenciais para acessar os di
 
 ## 🛠️ Construído Com
 
-* [Bootstrap](https://getbootstrap.com/) - Framework CSS para componentização e estilo.
-* [Bootstrap Icons](https://icons.getbootstrap.com/) - Biblioteca de ícones.
+* [Bootstrap](https://getbootstrap.com/).
+* [Bootstrap Icons](https://icons.getbootstrap.com/).
 * HTML5
 * CSS3
 * JavaScript

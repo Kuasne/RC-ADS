@@ -9,13 +9,6 @@ Este projeto é um sistema de agendamento de provas para o Centro Universitário
 * **Portal do Polo:** Disponibiliza aos polos uma interface para visualização e impressão de relatórios dos alunos vinculados.
 * **Interface Responsiva:** O sistema é totalmente funcional em diferentes tamanhos de tela.
 
-## 🚀 Começando
-
-Para executar este projeto localmente, basta abrir o arquivo `portal.html` em seu navegador de preferência.
-
-### Pré-requisitos
-
-Não há pré-requisitos para este projeto. Ele é construído com HTML, CSS e JavaScript puros e não requer nenhuma dependência externa para ser executado.
 
 ## 🔑 Credenciais de Acesso
 

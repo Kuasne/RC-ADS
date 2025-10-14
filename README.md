@@ -36,7 +36,7 @@ Para fins de demonstração, utilize as seguintes credenciais para acessar os di
 
 * [Fabiana](https://github.com/Fabiaudi)
 * [Helton](https://github.com/JohnEllias)
-* [Láis](https://github.com/laisbrme)
+* [Laís](https://github.com/laisbrme)
 * [Lorenzo](https://github.com/Kuasne)
 * [Lucas](https://github.com/catochos)
 * [Nathália](https://github.com/n4th05)

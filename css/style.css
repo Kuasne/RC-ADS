@@ -513,11 +513,12 @@ body {
   display: flex; /* Alterado de 'grid' para 'flex' */
   flex-direction: column; /* Faz os 'horario-dia-row' empilharem */
   gap: 10px;
+  text-align: center;
 }
 
 .horario-dia-row {
   display: grid; /* Cada linha é um grid */
-  grid-template-columns: auto 1fr 1fr auto; /* Seg | 09:00 | 19:00 | [icones] */
+  grid-template-columns: 40px 1fr 1fr auto;
   gap: 10px;
   align-items: center;
   transition: opacity 0.3s ease-in-out;
@@ -537,6 +538,7 @@ body {
 .horario-grid span {
   font-weight: 500;
   color: #333;
+  text-align: right;
 }
 
 /* Estilo para os selects de hora */

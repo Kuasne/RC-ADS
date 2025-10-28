@@ -41,6 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('agendamentoAdminForm');
   const listaProvas = document.getElementById('provasAgendadasList');
   const horarioGrid = document.querySelector('.horario-grid');
+  
+  // Carregar provas salvas no localStorage ao iniciar
+  carregarProvasSalvas();
 
   // "Ouvinte" de evento para o envio do formulário
   form.addEventListener('submit', function (e) {
@@ -50,18 +53,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const disciplinaSelect = document.getElementById('disciplinaAdmin');
     const poloSelect = document.getElementById('poloAdmin');
     const dataInicioInput = document.getElementById('dataInicio');
-    
-    // --- ATUALIZAÇÃO: Capturar a Data Fim ---
     const dataFimInput = document.getElementById('dataFim');
     
-    // Validação: Verifica se pelo menos um dia está ativo
+    // Validação
     const primeiroDiaAtivo = form.querySelector('.horario-dia-row:not(.dia-desativado)');
     if (!primeiroDiaAtivo) {
       alert('Você deve habilitar pelo menos um dia da semana para salvar.');
       return;
     }
-    // --- FIM DA VALIDAÇÃO ---
-
 
     // Pegar o TEXTO da opção selecionada
     const disciplinaTexto =
@@ -75,13 +74,25 @@ document.addEventListener('DOMContentLoaded', function () {
     // Criar o novo texto de informação (Período)
     const infoHorario = `de ${dataInicioFormatada} a ${dataFimFormatada}`;
 
-    // 2. Adicionar a prova na lista
-    adicionarProvaNaLista(disciplinaTexto, poloTexto, infoHorario);
+    // 2. Criar o objeto da prova
+    const novaProva = {
+      id: Date.now(),
+      disciplina: disciplinaTexto,
+      polo: poloTexto,
+      infoHorario: infoHorario,
+      status: "Agendado"
+    };
 
-    // 3. Limpar o formulário
+    // 3. Adicionar a prova na lista (HTML)
+    adicionarProvaNaListaHTML(novaProva);
+
+    // 4. Salvar no localStorage
+    salvarProvaNoStorage(novaProva);
+
+    // 5. Limpar o formulário
     form.reset();
 
-    // 4. Reativar todos os dias que foram desativados
+    // 6. Reativar todos os dias que foram desativados
     document.querySelectorAll('.horario-dia-row.dia-desativado').forEach(row => {
       row.classList.remove('dia-desativado');
       row.querySelectorAll('select').forEach(s => s.disabled = false);
@@ -96,6 +107,12 @@ document.addEventListener('DOMContentLoaded', function () {
     if (botaoExcluir) {
       const itemParaRemover = botaoExcluir.closest('.prova-item');
       if (itemParaRemover) {
+        
+        // Remove do localStorage
+        const idParaRemover = itemParaRemover.dataset.id;
+        removerProvaDoStorage(idParaRemover);
+
+        // Remove da tela
         itemParaRemover.remove();
       }
     }
@@ -132,19 +149,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /**
    * Cria o HTML para um novo item de prova e o insere na lista.
+   * @param {object} prova - O objeto da prova a ser renderizado.
    */
-  function adicionarProvaNaLista(disciplina, polo, infoHorario) {
+  function adicionarProvaNaListaHTML(prova) {
     const novoItemHTML = `
-      <div class="prova-item">
+      <div class="prova-item" data-id="${prova.id}">
         <div class="prova-item-details">
-          <h5 class="prova-title">${disciplina}</h5>
+          <h5 class="prova-title">${prova.disciplina}</h5>
           <div class="prova-meta">
-            <span><i class="bi bi-calendar"></i> ${infoHorario}</span> 
-            <span><i class="bi bi-geo-alt"></i> ${polo}</span>
+            <span><i class="bi bi-calendar"></i> ${prova.infoHorario}</span> 
+            <span><i class="bi bi-geo-alt"></i> ${prova.polo}</span>
           </div>
         </div>
         <div class="prova-item-actions">
-          <span class="prova-item-badge">Agendado</span>
+          <span class="prova-item-badge">${prova.status}</span>
           <button class="btn-delete-prova">
             <i class="bi bi-trash-fill"></i>
           </button>
@@ -153,6 +171,49 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
     
     listaProvas.insertAdjacentHTML('beforeend', novoItemHTML);
+  }
+
+  /**
+   * Salva um objeto de prova no localStorage.
+   * @param {object} prova - O objeto da prova a ser salvo.
+   */
+  function salvarProvaNoStorage(prova) {
+    try {
+      const provasSalvas = JSON.parse(localStorage.getItem('listaProvasAdmin')) || [];
+      provasSalvas.push(prova);
+      localStorage.setItem('listaProvasAdmin', JSON.stringify(provasSalvas));
+    } catch (error) {
+      console.error("Erro ao salvar no localStorage:", error);
+    }
+  }
+
+  /**
+   * Remove uma prova do localStorage pelo ID.
+   * @param {string} id - O ID da prova a ser removida.
+   */
+  function removerProvaDoStorage(id) {
+    try {
+      const provasSalvas = JSON.parse(localStorage.getItem('listaProvasAdmin')) || [];
+      const provasAtualizadas = provasSalvas.filter(prova => prova.id.toString() !== id);
+      localStorage.setItem('listaProvasAdmin', JSON.stringify(provasAtualizadas));
+    } catch (error) {
+      console.error("Erro ao remover do localStorage:", error);
+    }
+  }
+
+  /**
+   * Carrega e exibe as provas já salvas no localStorage.
+   */
+  function carregarProvasSalvas() {
+    try {
+      const provasSalvas = JSON.parse(localStorage.getItem('listaProvasAdmin')) || [];
+      listaProvas.innerHTML = ''; // Limpa a lista antes de carregar
+      provasSalvas.forEach(prova => {
+        adicionarProvaNaListaHTML(prova);
+      });
+    } catch (error) {
+      console.error("Erro ao carregar provas do localStorage:", error);
+    }
   }
 
   /**

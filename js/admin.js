@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
   
-  // --- 1. LÓGICA DA SIDEBAR  ---
+  //LÓGICA DA SIDEBAR
   const sidebarLinks = document.querySelectorAll(
     '.sidebar-nav .list-group-item'
   );
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
   showSection('agendamentos-content');
 
   
-  // --- LÓGICA DO FORMULÁRIO DE AGENDAMENTO ---
+  //LÓGICA DO FORMULÁRIO DE AGENDAMENTO
   
   const form = document.getElementById('agendamentoAdminForm');
   const listaProvas = document.getElementById('provasAgendadasList');
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // --- LÓGICA PARA EXCLUIR ITENS DA LISTA  ---
+  //LÓGICA PARA EXCLUIR ITENS DA LISTA
   
   listaProvas.addEventListener('click', function(e) {
     const botaoExcluir = e.target.closest('.btn-delete-prova');
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 
-  // --- LÓGICA PARA ATIVAR/DESATIVAR DIAS NO GRID  ---
+  //LÓGICA PARA ATIVAR/DESATIVAR DIAS NO GRID
   
   horarioGrid.addEventListener('click', function(e) {
     const lixeira = e.target.closest('.bi-trash');
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   
 
-  // --- FUNÇÕES AUXILIARES ---
+  //FUNÇÕES AUXILIARES
 
   /**
    * Cria o HTML para um novo item de prova e o insere na lista.
@@ -201,9 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  /**
-   * Carrega e exibe as provas já salvas no localStorage.
-   */
+  /*Carrega e exibe as provas já salvas no localStorage.*/
   function carregarProvasSalvas() {
     try {
       const provasSalvas = JSON.parse(localStorage.getItem('listaProvasAdmin')) || [];

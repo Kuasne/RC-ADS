@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    // ...existing code...
 
     // Modo Daltonismo (Deuteranopia) - Funciona em todas as telas
     const btnDaltonismo = document.getElementById('deuteranopia-toggle');
@@ -37,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ...existing code...
 });
 
 function initializeApp() {

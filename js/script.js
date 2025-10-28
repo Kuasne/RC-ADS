@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Funcionalidade dos botões de navegação (do portal.html, se aplicável)
+    // Funcionalidade dos botões de navegação
     const navButtons = document.querySelectorAll('.nav-button');
     const portalSubtitle = document.querySelector('.portal-subtitle');
     
@@ -37,10 +37,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.querySelector('#searchInput');
     const sidebarItems = document.querySelectorAll('.sidebar-item');
     
-    // ATUALIZADO: Seleciona a tabela pelo ID
+    // Seleciona a tabela pelo ID
     const tableBody = document.getElementById('poloReportTableBody');
 
-    // --- NOVA FUNÇÃO PARA CARREGAR DADOS DO LOCALSTORAGE ---
+    //FUNÇÃO PARA CARREGAR DADOS DO LOCALSTORAGE
     function carregarRelatoriosPolo() {
         if (!tableBody) return; // Sai se a tabela não for encontrada
 
@@ -59,9 +59,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Itera sobre cada prova salva e cria uma linha na tabela
             provasSalvas.forEach(prova => {
-                // Os dados do Admin (Disciplina, Período, Polo) não batem 100% com as colunas
-                // do Polo (Alunos, Professores). Adaptamos os dados que temos.
-                
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>(Não especificado)</td>
@@ -78,13 +75,12 @@ document.addEventListener('DOMContentLoaded', function() {
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Erro ao carregar relatórios.</td></tr>';
         }
     }
-    // --- FIM DA NOVA FUNÇÃO ---
 
     // Chama a função para carregar os dados assim que a página carregar
     carregarRelatoriosPolo();
 
 
-    // Sidebar navigation (lógica existente)
+    // Sidebar navigation 
     if(sidebarItems.length > 0) {
         sidebarItems.forEach(item => {
             item.addEventListener('click', function() {
@@ -97,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Filtro real (lógica existente)
+    // Filtro real 
     if (filterButton) {
         filterButton.addEventListener('click', function() {
             const query = searchInput.value.toLowerCase();
@@ -109,10 +105,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Impressão (lógica original, sem PDF, conforme solicitado)
+    // Impressão 
     if (printButton) {
         printButton.addEventListener('click', function() {
-            // Pega apenas as linhas visíveis (após filtro)
             const rows = Array.from(tableBody.querySelectorAll('tr'))
                               .filter(r => r.style.display !== 'none')
                               .map(r => r.outerHTML)
@@ -123,7 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const printWindow = window.open('', '', 'height=600,width=800');
             printWindow.document.write('<html><head><title>Relatório de Agendamentos</title>');
-            // Adiciona estilos básicos para impressão
             printWindow.document.write(`
                 <style>
                     body { font-family: 'Segoe UI', sans-serif; }
@@ -145,13 +139,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Modal de detalhes (lógica existente)
+    // Modal de detalhes
     const modal = document.getElementById('detailsModal');
     if (modal) {
         const modalContent = document.getElementById('modalContent');
         const closeBtn = document.querySelector('.modal .close');
 
-        // A tabela é dinâmica, então usamos delegação de eventos
         tableBody.addEventListener('click', function(e) {
             const row = e.target.closest('tr');
             if (row) {

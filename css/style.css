@@ -252,6 +252,7 @@ body {
 
 .card-body {
   padding: 1.5rem;
+  height: 100%
 }
 
 .btn-primary-custom {

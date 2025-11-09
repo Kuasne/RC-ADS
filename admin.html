@@ -281,10 +281,145 @@
               <h2>Cadastros</h2>
               <p>Conteúdo de Cadastros...</p>
             </div>
-            <div id="configuracoes-content" style="display: none">
-              <h2>Configurações</h2>
-              <p>Conteúdo de Configurações...</p>
+<div id="configuracoes-content" style="display: none">
+  <h2 class="mb-4"><i class="bi bi-gear me-2"></i>Configurações do Sistema</h2>
+
+  <div class="row">
+    <!-- CONFIGURAÇÕES GERAIS -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <i class="bi bi-building-gear me-2"></i>Informações Institucionais
+        </div>
+        <div class="card-body">
+          <form id="configFormGeral">
+            <div class="mb-3">
+              <label for="nomeInstituicao" class="form-label">Nome da Instituição</label>
+              <input type="text" id="nomeInstituicao" class="form-control" placeholder="Centro Universitário UNIFAA" />
             </div>
+            <div class="mb-3">
+              <label for="semestreAtivo" class="form-label">Semestre Letivo Ativo</label>
+              <select id="semestreAtivo" class="form-select">
+                <option value="2025.1">2025.1</option>
+                <option value="2025.2">2025.2</option>
+                <option value="2026.1">2026.1</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="emailSuporte" class="form-label">E-mail de Suporte</label>
+              <input type="email" id="emailSuporte" class="form-control" placeholder="suporte@unifaa.edu.br" />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-save me-2"></i>Salvar Alterações
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES DE SISTEMA -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+          <i class="bi bi-sliders me-2"></i>Preferências do Sistema
+        </div>
+        <div class="card-body">
+          <form id="configFormSistema">
+            <div class="mb-3">
+              <label for="temaSite" class="form-label">Tema do Sistema</label>
+              <select id="temaSite" class="form-select">
+                <option value="claro">Claro</option>
+                <option value="escuro">Escuro</option>
+                <option value="automático">Automático (baseado no sistema)</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="idiomaSite" class="form-label">Idioma</label>
+              <select id="idiomaSite" class="form-select">
+                <option value="pt-BR">Português (Brasil)</option>
+                <option value="en-US">Inglês</option>
+                <option value="es-ES">Espanhol</option>
+              </select>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="notificacoesEmail" checked />
+              <label class="form-check-label" for="notificacoesEmail">
+                Receber notificações por e-mail
+              </label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="modoManutencao" />
+              <label class="form-check-label text-danger fw-bold" for="modoManutencao">
+                Ativar modo de manutenção
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-secondary w-100">
+              <i class="bi bi-save me-2"></i>Aplicar Configurações
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES DE PERMISSÕES -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <i class="bi bi-shield-lock me-2"></i>Gerenciamento de Permissões
+        </div>
+        <div class="card-body">
+          <table class="table table-striped align-middle">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Função</th>
+                <th>Status</th>
+                <th class="text-end">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>admin@unifaa.edu.br</td>
+                <td>Administrador</td>
+                <td><span class="badge bg-success">Ativo</span></td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil-square"></i></button>
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>professor@unifaa.edu.br</td>
+                <td>Professor</td>
+                <td><span class="badge bg-success">Ativo</span></td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil-square"></i></button>
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>estagiario@unifaa.edu.br</td>
+                <td>Assistente</td>
+                <td><span class="badge bg-secondary">Inativo</span></td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil-square"></i></button>
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-dark mt-3">
+            <i class="bi bi-person-plus me-2"></i>Adicionar Usuário
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
             
           </div>
         </div>

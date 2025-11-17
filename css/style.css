@@ -661,17 +661,3 @@ body {
 .btn-delete-prova:hover {
   background-color: #f7d4d4;
 }
-/* ===== AJUSTE DE ESPAÇAMENTO LATERAL GERAL ===== */
-.container {
-  max-width: 100% !important;     /* Ocupa toda a largura da tela */
-  padding-left: 40px !important;  /* Diminui o espaço interno esquerdo */
-  padding-right: 40px !important; /* Diminui o espaço interno direito */
-}
-
-/* Em telas menores, mantém margens menores para melhor visualização */
-@media (max-width: 768px) {
-  .container {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-  }
-}

@@ -1,403 +1,226 @@
-// Sistema Administrativo UNIFAA - JavaScript
+document.addEventListener('DOMContentLoaded', function () {
+  
+  //LÓGICA DA SIDEBAR
+  const sidebarLinks = document.querySelectorAll(
+    '.sidebar-nav .list-group-item'
+  );
+  const contentSections = document.querySelectorAll(
+    '.main-content > div[id$="-content"]'
+  );
 
-document.addEventListener('DOMContentLoaded', function() {
-    initializeAdmin();
-    setupAdminEventListeners();
-    loadDashboardData();
-});
-
-function initializeAdmin() {
-    // Configurar navegação da sidebar
-    setupSidebarNavigation();
-    
-    // Configurar gráficos e estatísticas
-    setupCharts();
-    
-    // Configurar filtros e pesquisa
-    setupFilters();
-}
-
-function setupAdminEventListeners() {
-    // Navegação da sidebar
-    const sidebarLinks = document.querySelectorAll('.list-group-item');
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', handleSidebarNavigation);
+  // Função para mostrar a seção correta
+  function showSection(targetId) {
+    contentSections.forEach((section) => {
+      section.style.display = 'none';
     });
-    
-    // Botões de ação nas tabelas
-    const actionButtons = document.querySelectorAll('.btn-outline-primary, .btn-outline-warning, .btn-outline-danger');
-    actionButtons.forEach(button => {
-        button.addEventListener('click', handleTableAction);
-    });
-    
-    // Formulários de configuração
-    const configForms = document.querySelectorAll('form');
-    configForms.forEach(form => {
-        form.addEventListener('submit', handleConfigSubmit);
-    });
-}
-
-function setupSidebarNavigation() {
-    const sidebarLinks = document.querySelectorAll('.list-group-item');
-    
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Remover classe active de todos os links
-            sidebarLinks.forEach(l => l.classList.remove('active'));
-            
-            // Adicionar classe active ao link clicado
-            this.classList.add('active');
-            
-            // Obter o ID da seção
-            const targetId = this.getAttribute('href').substring(1);
-            
-            // Mostrar/ocultar conteúdo
-            showAdminSection(targetId);
-        });
-    });
-}
-
-function showAdminSection(sectionId) {
-    // Ocultar todas as seções
-    const allSections = document.querySelectorAll('[id$="-content"]');
-    allSections.forEach(section => {
-        section.style.display = 'none';
-    });
-    
-    // Mostrar seção específica
-    const targetSection = document.getElementById(sectionId + '-content');
+    const targetSection = document.getElementById(targetId);
     if (targetSection) {
-        targetSection.style.display = 'block';
-        targetSection.classList.add('fade-in');
+      targetSection.style.display = 'block';
     } else {
-        // Se não existe seção específica, mostrar dashboard
-        document.getElementById('dashboard-content').style.display = 'block';
-        
-        // Simular carregamento de dados para diferentes seções
-        loadSectionData(sectionId);
+      document.getElementById('agendamentos-content').style.display = 'block';
     }
-}
+  }
 
-function loadSectionData(sectionId) {
-    switch(sectionId) {
-        case 'agendamentos':
-            loadAgendamentosData();
-            break;
-        case 'disciplinas':
-            loadDisciplinasData();
-            break;
-        case 'professores':
-            loadProfessoresData();
-            break;
-        case 'alunos':
-            loadAlunosData();
-            break;
-        case 'relatorios':
-            loadRelatoriosData();
-            break;
-        case 'configuracoes':
-            showConfigSection();
-            break;
-        default:
-            loadDashboardData();
+  // Adicionar eventos de clique aos links da sidebar
+  sidebarLinks.forEach((link) => {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      sidebarLinks.forEach((l) => l.classList.remove('active'));
+      this.classList.add('active');
+      const targetId = this.getAttribute('href').substring(1) + '-content';
+      showSection(targetId);
+    });
+  });
+
+  // Mostrar a seção ativa inicial
+  showSection('agendamentos-content');
+
+  
+  //LÓGICA DO FORMULÁRIO DE AGENDAMENTO
+  
+  const form = document.getElementById('agendamentoAdminForm');
+  const listaProvas = document.getElementById('provasAgendadasList');
+  const horarioGrid = document.querySelector('.horario-grid');
+  
+  // Carregar provas salvas no localStorage ao iniciar
+  carregarProvasSalvas();
+
+  // "Ouvinte" de evento para o envio do formulário
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); // Impede o recarregamento da página
+
+    // 1. Obter os dados do formulário
+    const disciplinaSelect = document.getElementById('disciplinaAdmin');
+    const poloSelect = document.getElementById('poloAdmin');
+    const dataInicioInput = document.getElementById('dataInicio');
+    const dataFimInput = document.getElementById('dataFim');
+    
+    // Validação
+    const primeiroDiaAtivo = form.querySelector('.horario-dia-row:not(.dia-desativado)');
+    if (!primeiroDiaAtivo) {
+      alert('Você deve habilitar pelo menos um dia da semana para salvar.');
+      return;
     }
-}
 
-function loadDashboardData() {
-    // Simular carregamento de dados do dashboard
-    updateStatistics();
-    updateRecentAppointments();
-}
+    // Pegar o TEXTO da opção selecionada
+    const disciplinaTexto =
+      disciplinaSelect.options[disciplinaSelect.selectedIndex].text;
+    const poloTexto = poloSelect.options[poloSelect.selectedIndex].text;
 
-function updateStatistics() {
-    // Simular dados dinâmicos
-    const stats = {
-        agendamentosHoje: Math.floor(Math.random() * 200) + 100,
-        alunosAtivos: Math.floor(Math.random() * 500) + 1000,
-        disciplinas: 42,
-        professores: 28
+    // --- Formatar as duas datas ---
+    const dataInicioFormatada = formatarData(dataInicioInput.value);
+    const dataFimFormatada = formatarData(dataFimInput.value);
+    
+    // Criar o novo texto de informação (Período)
+    const infoHorario = `de ${dataInicioFormatada} a ${dataFimFormatada}`;
+
+    // 2. Criar o objeto da prova
+    const novaProva = {
+      id: Date.now(),
+      disciplina: disciplinaTexto,
+      polo: poloTexto,
+      infoHorario: infoHorario,
+      status: "Agendado"
     };
-    
-    // Atualizar cards de estatísticas com animação
-    animateCounter('.card-custom h3', stats.agendamentosHoje, 0);
-}
 
-function animateCounter(selector, target, current) {
-    const elements = document.querySelectorAll(selector);
-    if (elements.length === 0) return;
-    
-    const increment = target / 50;
-    
-    if (current < target) {
-        elements[0].textContent = Math.floor(current);
-        setTimeout(() => animateCounter(selector, target, current + increment), 20);
-    } else {
-        elements[0].textContent = target;
-    }
-}
+    // 3. Adicionar a prova na lista (HTML)
+    adicionarProvaNaListaHTML(novaProva);
 
-function loadAgendamentosData() {
-    showNotification('Carregando dados de agendamentos...', 'info');
+    // 4. Salvar no localStorage
+    salvarProvaNoStorage(novaProva);
+
+    // 5. Limpar o formulário
+    form.reset();
+
+    // 6. Reativar todos os dias que foram desativados
+    document.querySelectorAll('.horario-dia-row.dia-desativado').forEach(row => {
+      row.classList.remove('dia-desativado');
+      row.querySelectorAll('select').forEach(s => s.disabled = false);
+    });
+  });
+
+  //LÓGICA PARA EXCLUIR ITENS DA LISTA
+  
+  listaProvas.addEventListener('click', function(e) {
+    const botaoExcluir = e.target.closest('.btn-delete-prova');
     
-    // Simular carregamento
-    setTimeout(() => {
-        const dashboardContent = document.getElementById('dashboard-content');
-        dashboardContent.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Gerenciar Agendamentos</h2>
-                <div>
-                    <button class="btn btn-primary-custom me-2">
-                        <i class="bi bi-funnel me-1"></i>Filtrar
-                    </button>
-                    <button class="btn btn-success">
-                        <i class="bi bi-plus-circle me-1"></i>Novo Agendamento
-                    </button>
-                </div>
-            </div>
-            
-            <div class="card card-custom">
-                <div class="card-header card-header-custom">
-                    <h4 class="card-title">
-                        <i class="bi bi-calendar-check me-2"></i>Todos os Agendamentos
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Aluno</th>
-                                    <th>Disciplina</th>
-                                    <th>Professor</th>
-                                    <th>Data/Hora</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${generateAgendamentosTable()}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        `;
+    if (botaoExcluir) {
+      const itemParaRemover = botaoExcluir.closest('.prova-item');
+      if (itemParaRemover) {
         
-        showNotification('Dados carregados com sucesso!', 'success');
-    }, 1000);
-}
+        // Remove do localStorage
+        const idParaRemover = itemParaRemover.dataset.id;
+        removerProvaDoStorage(idParaRemover);
 
-function generateAgendamentosTable() {
-    const agendamentos = [
-        { id: 1, aluno: 'João Silva', disciplina: 'Matemática', professor: 'Prof. Carlos', data: '15/12/2024 08:00', status: 'Confirmado' },
-        { id: 2, aluno: 'Maria Santos', disciplina: 'Física', professor: 'Prof. Ana', data: '16/12/2024 14:00', status: 'Pendente' },
-        { id: 3, aluno: 'Pedro Costa', disciplina: 'Química', professor: 'Prof. Roberto', data: '17/12/2024 10:00', status: 'Confirmado' },
-        { id: 4, aluno: 'Ana Oliveira', disciplina: 'Biologia', professor: 'Prof. Dra. Ana', data: '18/12/2024 16:00', status: 'Cancelado' },
-        { id: 5, aluno: 'Carlos Lima', disciplina: 'História', professor: 'Prof. Maria', data: '19/12/2024 09:00', status: 'Confirmado' }
-    ];
-    
-    return agendamentos.map(ag => `
-        <tr>
-            <td>#${ag.id.toString().padStart(3, '0')}</td>
-            <td>${ag.aluno}</td>
-            <td>${ag.disciplina}</td>
-            <td>${ag.professor}</td>
-            <td>${ag.data}</td>
-            <td><span class="status-badge status-${ag.status.toLowerCase()}">${ag.status}</span></td>
-            <td>
-                <button class="btn btn-sm btn-outline-primary" title="Visualizar">
-                    <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-warning" title="Editar">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" title="Excluir">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        </tr>
-    `).join('');
-}
-
-function showConfigSection() {
-    const configContent = document.getElementById('configuracoes-content');
-    if (configContent) {
-        configContent.style.display = 'block';
-        configContent.classList.add('fade-in');
+        // Remove da tela
+        itemParaRemover.remove();
+      }
     }
-}
+  });
 
-function handleTableAction(e) {
-    const button = e.target.closest('button');
-    const row = button.closest('tr');
-    const aluno = row.cells[1].textContent;
-    
-    if (button.classList.contains('btn-outline-primary')) {
-        // Visualizar
-        showNotification(`Visualizando dados de ${aluno}`, 'info');
-    } else if (button.classList.contains('btn-outline-warning')) {
-        // Editar
-        showNotification(`Editando agendamento de ${aluno}`, 'info');
-    } else if (button.classList.contains('btn-outline-danger')) {
-        // Excluir
-        if (confirm(`Tem certeza que deseja excluir o agendamento de ${aluno}?`)) {
-            row.style.animation = 'fadeOut 0.5s ease-out';
-            setTimeout(() => {
-                row.remove();
-                showNotification(`Agendamento de ${aluno} excluído com sucesso!`, 'success');
-            }, 500);
-        }
+
+  //LÓGICA PARA ATIVAR/DESATIVAR DIAS NO GRID
+  
+  horarioGrid.addEventListener('click', function(e) {
+    const lixeira = e.target.closest('.bi-trash');
+    const adicionar = e.target.closest('.bi-calendar-plus');
+
+    // Se clicou na Lixeira
+    if (lixeira) {
+      const row = lixeira.closest('.horario-dia-row');
+      if (row) {
+        row.classList.add('dia-desativado');
+        row.querySelectorAll('select.form-select-time').forEach(s => s.disabled = true);
+      }
     }
-}
 
-function handleConfigSubmit(e) {
-    e.preventDefault();
-    
-    const form = e.target;
-    const formData = new FormData(form);
-    
-    // Simular salvamento
-    const submitButton = form.querySelector('button[type="submit"]');
-    const originalText = submitButton.innerHTML;
-    
-    submitButton.innerHTML = `
-        <span class="spinner-border spinner-border-sm me-2"></span>
-        Salvando...
-    `;
-    submitButton.disabled = true;
-    
-    setTimeout(() => {
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
-        showNotification('Configurações salvas com sucesso!', 'success');
-    }, 2000);
-}
-
-function setupCharts() {
-    // Placeholder para gráficos futuros
-    console.log('Configurando gráficos...');
-}
-
-function setupFilters() {
-    // Placeholder para filtros
-    console.log('Configurando filtros...');
-}
-
-function loadDisciplinasData() {
-    showNotification('Funcionalidade de disciplinas em desenvolvimento', 'info');
-}
-
-function loadProfessoresData() {
-    showNotification('Funcionalidade de professores em desenvolvimento', 'info');
-}
-
-function loadAlunosData() {
-    showNotification('Funcionalidade de alunos em desenvolvimento', 'info');
-}
-
-function loadRelatoriosData() {
-    showNotification('Funcionalidade de relatórios em desenvolvimento', 'info');
-}
-
-function updateRecentAppointments() {
-    // Atualizar tabela de agendamentos recentes
-    const tbody = document.querySelector('tbody');
-    if (tbody) {
-        // Adicionar efeito de loading
-        tbody.style.opacity = '0.5';
-        
-        setTimeout(() => {
-            tbody.style.opacity = '1';
-        }, 500);
+    // Se clicou no "Adicionar"
+    if (adicionar) {
+      const row = adicionar.closest('.horario-dia-row');
+      if (row) {
+        row.classList.remove('dia-desativado');
+        row.querySelectorAll('select.form-select-time').forEach(s => s.disabled = false);
+      }
     }
-}
+  });
+  
 
-// Função para exportar relatórios
-function exportReport(format) {
-    showNotification(`Exportando relatório em formato ${format.toUpperCase()}...`, 'info');
-    
-    setTimeout(() => {
-        showNotification('Relatório exportado com sucesso!', 'success');
-    }, 2000);
-}
+  //FUNÇÕES AUXILIARES
 
-// Função para backup de dados
-function backupData() {
-    showNotification('Iniciando backup dos dados...', 'info');
-    
-    setTimeout(() => {
-        showNotification('Backup realizado com sucesso!', 'success');
-    }, 3000);
-}
-
-// Utilitário para notificações (reutilizando do main.js)
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
-    notification.style.cssText = `
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        min-width: 300px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  /**
+   * Cria o HTML para um novo item de prova e o insere na lista.
+   * @param {object} prova - O objeto da prova a ser renderizado.
+   */
+  function adicionarProvaNaListaHTML(prova) {
+    const novoItemHTML = `
+      <div class="prova-item" data-id="${prova.id}">
+        <div class="prova-item-details">
+          <h5 class="prova-title">${prova.disciplina}</h5>
+          <div class="prova-meta">
+            <span><i class="bi bi-calendar"></i> ${prova.infoHorario}</span> 
+            <span><i class="bi bi-geo-alt"></i> ${prova.polo}</span>
+          </div>
+        </div>
+        <div class="prova-item-actions">
+          <span class="prova-item-badge">${prova.status}</span>
+          <button class="btn-delete-prova">
+            <i class="bi bi-trash-fill"></i>
+          </button>
+        </div>
+      </div>
     `;
     
-    notification.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        if (notification.parentNode) {
-            notification.remove();
-        }
-    }, 5000);
-}
+    listaProvas.insertAdjacentHTML('beforeend', novoItemHTML);
+  }
 
-// Adicionar estilos específicos para admin
-const adminStyle = document.createElement('style');
-adminStyle.textContent = `
-    .status-confirmado {
-        background: #d4edda;
-        color: #155724;
+  /**
+   * Salva um objeto de prova no localStorage.
+   * @param {object} prova - O objeto da prova a ser salvo.
+   */
+  function salvarProvaNoStorage(prova) {
+    try {
+      const provasSalvas = JSON.parse(localStorage.getItem('listaProvasAdmin')) || [];
+      provasSalvas.push(prova);
+      localStorage.setItem('listaProvasAdmin', JSON.stringify(provasSalvas));
+    } catch (error) {
+      console.error("Erro ao salvar no localStorage:", error);
     }
-    
-    .status-cancelado {
-        background: #f8d7da;
-        color: #721c24;
-    }
-    
-    .list-group-item {
-        border: none;
-        padding: 1rem 1.5rem;
-        transition: all 0.3s ease;
-    }
-    
-    .list-group-item:hover {
-        background-color: #f8f9fa;
-        transform: translateX(5px);
-    }
-    
-    .list-group-item.active {
-        background: linear-gradient(135deg, #0fab95 0%, #00a8cf 100%);
-        color: white;
-        border-radius: 0 25px 25px 0;
-    }
-    
-    .table th {
-        border-top: none;
-        font-weight: 600;
-        color: #4e5155;
-    }
-    
-    .table-hover tbody tr:hover {
-        background-color: rgba(15, 171, 149, 0.05);
-    }
-`;
-document.head.appendChild(adminStyle);
+  }
 
+  /**
+   * Remove uma prova do localStorage pelo ID.
+   * @param {string} id - O ID da prova a ser removida.
+   */
+  function removerProvaDoStorage(id) {
+    try {
+      const provasSalvas = JSON.parse(localStorage.getItem('listaProvasAdmin')) || [];
+      const provasAtualizadas = provasSalvas.filter(prova => prova.id.toString() !== id);
+      localStorage.setItem('listaProvasAdmin', JSON.stringify(provasAtualizadas));
+    } catch (error) {
+      console.error("Erro ao remover do localStorage:", error);
+    }
+  }
+
+  /*Carrega e exibe as provas já salvas no localStorage.*/
+  function carregarProvasSalvas() {
+    try {
+      const provasSalvas = JSON.parse(localStorage.getItem('listaProvasAdmin')) || [];
+      listaProvas.innerHTML = ''; // Limpa a lista antes de carregar
+      provasSalvas.forEach(prova => {
+        adicionarProvaNaListaHTML(prova);
+      });
+    } catch (error) {
+      console.error("Erro ao carregar provas do localStorage:", error);
+    }
+  }
+
+  /**
+   * Converte uma data do formato 'YYYY-MM-DD' para 'DD/MM/YYYY'.
+   */
+  function formatarData(dataString) {
+    if (!dataString) return '';
+    const [ano, mes, dia] = dataString.split('-');
+    return `${dia}/${mes}/${ano}`;
+  }
+  
+});

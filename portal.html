@@ -1,33 +1,42 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Acesso UNIFAA</title>
-    <link rel="stylesheet" href="/css/portal.css">
-    <script src="script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Acesso UNIFAA</title>
+  <link rel="stylesheet" href="css/portal.css">
 </head>
 <body>
-    <div class="container">
-        <div class="login-card">
-            <div class="logo-section">
-                <img src="images/unifaa-logo.png" alt="Logo UNIFAA">
-            </div>
-            <h1 class="portal-title">Portal de Acesso</h1>
-            <div class="navigation-buttons">
-                <button class="nav-button active">Aluno</button>
-                <button class="nav-button">Administrativo</button>
-                <button class="nav-button">Polo</button>
-            </div>
-            <form class="login-form">
-                <label for="username">Usuário</label>
-                <input type="text" id="username" placeholder="Digite seu RA">
-                <label for="password">Senha</label>
-                <input type="password" id="password" placeholder="Digite sua senha">
-                <button type="submit" class="login-button">Entrar</button>
-            </form>
-            <a href="#" class="forgot-password">Esqueci minha senha</a>
-        </div>
+  <div class="container">
+    <div class="login-card">
+      <div class="logo-section">
+        <img src="images/unifaa-logo.png" alt="Logo UNIFAA">
+      </div>
+
+      <h1 class="portal-title">Portal de Acesso</h1>
+
+      <div class="navigation-buttons">
+        <button class="nav-button active" data-role="aluno">Estudante</button> <!--Alterei Aluno para Estudante após o questionamento do prof. na ultima aula(Vitor)-->
+        <button class="nav-button" data-role="administrativo">Administrativo</button>
+        <button class="nav-button" data-role="polo">Polo</button>
+      </div>
+
+      <form class="login-form" id="loginForm" autocomplete="off" novalidate>
+        <label for="username">Usuário</label>
+        <input type="text" id="username" placeholder="Digite seu RA">
+
+        <label for="password">Senha</label>
+        <input type="password" id="password" placeholder="Digite sua senha">
+
+        <button type="submit" class="login-button">Entrar</button>
+      </form>
+
+      <div id="loginError" role="alert" aria-live="assertive"></div>
+
+      <a href="#" class="forgot-password">Esqueci minha senha</a>
     </div>
+  </div>
+
+  <script src="js/portal.js"></script>
 </body>
 </html>

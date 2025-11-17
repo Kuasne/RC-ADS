@@ -1,201 +1,260 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Polo UNIFAA - Lista de Provas</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="css/style.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área do Polo - Visualização e Relatórios</title>
+  <link rel="stylesheet" href="./css/polo.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ===== Modal do Filtro ===== */
+    .filter-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .filter-modal-content {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      width: 350px;
+      text-align: center;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .filter-modal-content h3 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .filter-list {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .filter-list label {
+      display: block;
+      margin: 8px 0;
+      cursor: pointer;
+    }
+
+    .filter-actions {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .filter-actions button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-confirm {
+      background: #1e88e5;
+      color: white;
+    }
+
+    .btn-cancel {
+      background: #ccc;
+      color: black;
+    }
+  </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-custom" style="background: linear-gradient(to right, #1eae5f, #0baee9);">
-  <div class="container">
-    <a class="navbar-brand text-white fw-bold" href="dashboard.html">
-      <img src="images/unifaa-logo.png" alt="UNIFAA" class="me-2" style="height: 32px" />
-      Portal do Aluno
-    </a>
-    <div class="ms-auto">
-      <a href="polo.html" class="btn btn-outline-light fw-semibold">Sair</a>
+  <div class="header">
+    <div class="header-left">
+      <i class="fas fa-graduation-cap"></i>
+      <span>Área do Polo</span>
+    </div>
+    <div class="header-right">
+      <i class="fas fa-user-circle"></i>
+      <span>Jamilly do Amaral - Polo Barra Mansa</span>
+      <i class="fas fa-chevron-down"></i>
     </div>
   </div>
-</nav>
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-md-10">
-        <div class="card shadow-sm">
-          <div class="card-header card-header-custom">
-            <h3 class="mb-0">Lista de Alunos - Polo UNIFAA</h3>
+
+  <div class="main-container">
+    <div class="sidebar">
+      <div class="sidebar-item active" data-target="relatorios">
+        <i class="fas fa-chart-line"></i>
+        <span>Relatórios</span>
+      </div>
+      <div class="sidebar-item" data-target="configuracoes">
+        <i class="fas fa-cog"></i>
+        <span>Configurações</span>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <!-- RELATÓRIOS -->
+      <div id="relatorios" class="content-section">
+        <div class="content-header">
+          <h1>Visualização e Relatórios</h1>
+          <div class="action-buttons">
+            <input type="text" id="searchInput" placeholder="Pesquisar aluno ou disciplina...">
+            <button class="filter-button" id="openFilterBtn">
+              <i class="fas fa-filter"></i> Filtrar
+            </button>
+            <button class="print-button">
+              <i class="fas fa-print"></i> Imprimir Relatório
+            </button>
           </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-bordered align-middle">
-                <thead class="table-light">
-                  <tr>
-                    <th>Nome do Aluno</th>
-                    <th>Curso</th>
-                    <th>Matrícula</th>
-                    <th>Disciplina da Prova</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1. Maria Oliveira</td>
-                    <td>Engenharia de Software</td>
-                    <td>20231234</td>
-                    <td>Banco de Dados<br /><span class="badge bg-primary">20/09/2025 - 08:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>2. João Silva</td>
-                    <td>Ciência da Computação</td>
-                    <td>20235678</td>
-                    <td>Algoritmos e Lógica de Programação<br /><span class="badge bg-primary">20/09/2025 - 08:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>3. Ana Souza</td>
-                    <td>Desenvolvimento Web</td>
-                    <td>20239876</td>
-                    <td>Programação Orientada a Objetos<br /><span class="badge bg-primary">20/09/2025 - 08:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>4. Pedro Lima</td>
-                    <td>Engenharia de Software</td>
-                    <td>20231235</td>
-                    <td>Redes de Computadores<br /><span class="badge bg-primary">20/09/2025 - 08:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>5. Lucas Martins</td>
-                    <td>Ciência da Computação</td>
-                    <td>20231236</td>
-                    <td>Banco de Dados<br /><span class="badge bg-success">21/09/2025 - 10:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>6. Fernanda Costa</td>
-                    <td>Engenharia de Software</td>
-                    <td>20231237</td>
-                    <td>Desenvolvimento Web<br /><span class="badge bg-success">22/09/2025 - 14:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>7. Bruno Alves</td>
-                    <td>Ciência da Computação</td>
-                    <td>20231238</td>
-                    <td>Segurança da Informação<br /><span class="badge bg-info">23/09/2025 - 16:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>8. Juliana Pereira</td>
-                    <td>Engenharia de Software</td>
-                    <td>20231239</td>
-                    <td>Algoritmos e Lógica de Programação<br /><span class="badge bg-warning">24/09/2025 - 08:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>9. Rafael Santos</td>
-                    <td>Desenvolvimento Web</td>
-                    <td>20231240</td>
-                    <td>Programação Orientada a Objetos<br /><span class="badge bg-success">25/09/2025 - 10:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>10. Camila Rocha</td>
-                    <td>Ciência da Computação</td>
-                    <td>20231241</td>
-                    <td>Banco de Dados<br /><span class="badge bg-info">26/09/2025 - 14:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>11. Gabriel Souza</td>
-                    <td>Engenharia de Software</td>
-                    <td>20231242</td>
-                    <td>Desenvolvimento Web<br /><span class="badge bg-warning">27/09/2025 - 16:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>12. Patrícia Mendes</td>
-                    <td>Ciência da Computação</td>
-                    <td>20231243</td>
-                    <td>Segurança da Informação<br /><span class="badge bg-success">28/09/2025 - 08:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>13. Rodrigo Cunha</td>
-                    <td>Engenharia de Software</td>
-                    <td>20231244</td>
-                    <td>Algoritmos e Lógica de Programação<br /><span class="badge bg-info">29/09/2025 - 10:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>14. Larissa Dias</td>
-                    <td>Desenvolvimento Web</td>
-                    <td>20231245</td>
-                    <td>Programação Orientada a Objetos<br /><span class="badge bg-success">30/09/2025 - 14:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>15. Vinícius Teixeira</td>
-                    <td>Ciência da Computação</td>
-                    <td>20231246</td>
-                    <td>Banco de Dados<br /><span class="badge bg-warning">01/10/2025 - 16:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>16. Beatriz Ramos</td>
-                    <td>Engenharia de Software</td>
-                    <td>20231247</td>
-                    <td>Desenvolvimento Web<br /><span class="badge bg-success">02/10/2025 - 08:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>17. Felipe Nunes</td>
-                    <td>Ciência da Computação</td>
-                    <td>20231248</td>
-                    <td>Segurança da Informação<br /><span class="badge bg-info">03/10/2025 - 10:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>18. Carolina Lopes</td>
-                    <td>Engenharia de Software</td>
-                    <td>20231249</td>
-                    <td>Algoritmos e Lógica de Programação<br /><span class="badge bg-warning">04/10/2025 - 14:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>19. Thiago Barros</td>
-                    <td>Desenvolvimento Web</td>
-                    <td>20231250</td>
-                    <td>Programação Orientada a Objetos<br /><span class="badge bg-success">05/10/2025 - 16:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>20. Isabela Ferreira</td>
-                    <td>Ciência da Computação</td>
-                    <td>20231251</td>
-                    <td>Banco de Dados<br /><span class="badge bg-info">06/10/2025 - 08:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>21. Eduardo Cardoso</td>
-                    <td>Engenharia de Software</td>
-                    <td>20231252</td>
-                    <td>Desenvolvimento Web<br /><span class="badge bg-warning">07/10/2025 - 10:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>22. Renata Moreira</td>
-                    <td>Ciência da Computação</td>
-                    <td>20231253</td>
-                    <td>Segurança da Informação<br /><span class="badge bg-success">08/10/2025 - 14:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>23. Marcelo Tavares</td>
-                    <td>Engenharia de Software</td>
-                    <td>20231254</td>
-                    <td>Algoritmos e Lógica de Programação<br /><span class="badge bg-info">09/10/2025 - 16:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>24. Sabrina Pires</td>
-                    <td>Desenvolvimento Web</td>
-                    <td>20231255</td>
-                    <td>Programação Orientada a Objetos<br /><span class="badge bg-success">10/10/2025 - 08:00</span></td>
-                  </tr>
-                  <tr>
-                    <td>25. Daniela Castro</td>
-                    <td>Ciência da Computação</td>
-                    <td>20231256</td>
-                    <td>Banco de Dados<br /><span class="badge bg-warning">11/10/2025 - 10:00</span></td>
-                  </tr>
-                </tbody>
-              </table>
+        </div>
+
+        <div class="report-section">
+          <div class="report-section-header">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Agendamentos de Provas</span>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Alunos</th>
+                  <th>Disciplinas</th>
+                  <th>Professores</th>
+                  <th>Data/Hora</th>
+                  <th>Polo</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="poloReportTableBody">
+                <!-- Linhas de agendamento serão adicionadas dinamicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONFIGURAÇÕES DO POLO -->
+      <div id="configuracoes" class="content-section" style="display:none;">
+        <div class="content-header">
+          <h1><i class="fas fa-cog"></i> Configurações do Polo</h1>
+        </div>
+
+        <div class="config-container">
+          <form id="configPoloForm">
+            <div class="form-group">
+              <label for="nomePolo">Nome do Polo</label>
+              <input type="text" id="nomePolo" value="Polo Barra Mansa" required>
             </div>
-            <a href="dashboard.html" class="btn btn-outline-success mt-3">Voltar ao Portal</a>
-          </div>
+
+            <div class="form-group">
+              <label for="coordenadorPolo">Nome do Coordenador</label>
+              <input type="text" id="coordenadorPolo" value="Jamilly do Amaral" required>
+            </div>
+
+            <div class="form-group">
+              <label for="emailPolo">E-mail de Contato</label>
+              <input type="email" id="emailPolo" value="barra.mansa@unifaa.edu.br" required>
+            </div>
+
+            <div class="form-group">
+              <label for="horarioPolo">Horário de Funcionamento</label>
+              <select id="horarioPolo">
+                <option>08:00 às 17:00</option>
+                <option>09:00 às 18:00</option>
+                <option>10:00 às 19:00</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="capacidadeMax">Capacidade Máxima de Alunos por Sala</label>
+              <input type="number" id="capacidadeMax" value="25" min="10" max="100">
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" id="agendamentoAuto" checked>
+              <label for="agendamentoAuto">Ativar Agendamento Automático de Provas</label>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" id="notificacoesPolo" checked>
+              <label for="notificacoesPolo">Receber notificações por e-mail</label>
+            </div>
+
+            <button type="submit" class="save-button">
+              <i class="fas fa-save"></i> Salvar Configurações
+            </button>
+          </form>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- MODAL DE FILTRO -->
+  <div id="filterModal" class="filter-modal">
+    <div class="filter-modal-content">
+      <h3>Filtrar por Polo</h3>
+      <div class="filter-list" id="filterList">
+        <label><input type="radio" name="poloFiltro" value="Todos" checked> Todos os Polos</label>
+        <label><input type="radio" name="poloFiltro" value="Barra Mansa"> Barra Mansa</label>
+        <label><input type="radio" name="poloFiltro" value="Volta Redonda"> Volta Redonda</label>
+        <label><input type="radio" name="poloFiltro" value="Angra dos Reis"> Angra dos Reis</label>
+      </div>
+      <div class="filter-actions">
+        <button class="btn-confirm" id="applyFilterBtn">Aplicar</button>
+        <button class="btn-cancel" id="cancelFilterBtn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Alternar abas =====
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    const sections = document.querySelectorAll('.content-section');
+
+    sidebarItems.forEach(item => {
+      item.addEventListener('click', () => {
+        sidebarItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        sections.forEach(sec => sec.style.display = 'none');
+        document.getElementById(item.dataset.target).style.display = 'block';
+      });
+    });
+
+    // ===== Modal de filtro =====
+    const filterModal = document.getElementById('filterModal');
+    const openFilterBtn = document.getElementById('openFilterBtn');
+    const applyFilterBtn = document.getElementById('applyFilterBtn');
+    const cancelFilterBtn = document.getElementById('cancelFilterBtn');
+
+    openFilterBtn.addEventListener('click', () => filterModal.style.display = 'flex');
+    cancelFilterBtn.addEventListener('click', () => filterModal.style.display = 'none');
+
+    applyFilterBtn.addEventListener('click', () => {
+      const selected = document.querySelector('input[name="poloFiltro"]:checked').value;
+      const rows = document.querySelectorAll('#poloReportTableBody tr');
+
+      rows.forEach(row => {
+        const polo = row.cells[4]?.textContent.trim();
+        row.style.display = (selected === 'Todos' || polo === selected) ? '' : 'none';
+      });
+
+      filterModal.style.display = 'none';
+    });
+
+    // ===== Simulação de salvamento =====
+    document.getElementById('configPoloForm').addEventListener('submit', e => {
+      e.preventDefault();
+      alert('Configurações do Polo salvas com sucesso!');
+    });
+  </script>
 </body>
 </html>

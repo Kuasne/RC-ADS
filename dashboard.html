@@ -11,9 +11,9 @@
 </head>
 
 <body class="dashboard-page">
-
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-custom" style="background: linear-gradient(135deg, #0fab95 0%, #00a8cf 100%);">
+  <nav class="navbar navbar-expand-lg navbar-custom"
+    style="background: linear-gradient(135deg, #0fab95 0%, #00a8cf 100%);">
     <div class="container">
       <a class="navbar-brand" href="#">
         <img src="images/unifaa-logo.png" alt="UNIFAA" class="me-2" />
@@ -22,7 +22,6 @@
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
-
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
@@ -40,11 +39,21 @@
               <i class="bi bi-person-circle me-1"></i>Aluno
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Perfil</a></li>
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#configuracoesModal">
-                  <i class="bi bi-gear me-2"></i>Configurações</a></li>
-              <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item" href="./portal.html"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="bi bi-person me-2"></i>Perfil</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#configuracoesModal">
+                  <i class="bi bi-gear me-2"></i>Configurações</a>
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <a class="dropdown-item" href="./portal.html">
+                  <i class="bi bi-box-arrow-right me-2"></i>Sair</a>
+              </li>
             </ul>
           </li>
         </ul>
@@ -53,178 +62,175 @@
   </nav>
 
   <!-- Conteúdo Principal -->
-<!-- Conteúdo Principal -->
-<div class="main-content mt-4">
-  <div class="container">
-    <!-- Seção de Boas-vindas -->
-    <div class="row align-items-center mb-4">
-      <div class="col-md-8">
-        <h1 class="fw-bold">Bem-vindo ao Portal de Agendamento</h1>
-        <p class="lead text-muted">
-          Gerencie seus agendamentos de provas de forma prática e eficiente
-        </p>
-      </div>
-      <div class="col-md-4 text-end">
-        <img src="images/estudantes.jpg" alt="Estudantes" class="img-fluid rounded" style="max-height: 200px" />
-      </div>
-    </div>
-
-    <!-- Cards de Estatísticas -->
-    <div class="row mt-3 mb-4">
-      <div class="col-md-4 mb-3">
-        <div class="card text-center shadow-sm h-100">
-          <div class="card-body">
-            <div class="fs-2 fw-bold text-primary" id="totalProvas">0</div>
-            <div class="text-muted">Total de Provas</div>
-          </div>
+  <div class="main-content mt-4">
+    <div class="container">
+      <!-- Seção de Boas-vindas -->
+      <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+          <h1 class="fw-bold">Bem-vindo ao Portal de Agendamento</h1>
+          <p class="lead text-muted">
+            Gerencie seus agendamentos de provas de forma prática e eficiente
+          </p>
         </div>
-      </div>
-      <div class="col-md-4 mb-3">
-        <div class="card text-center shadow-sm h-100">
-          <div class="card-body">
-            <div class="fs-2 fw-bold text-success" id="proximaProva">-</div>
-            <div class="text-muted">Próxima Prova</div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 mb-3">
-        <div class="card text-center shadow-sm h-100">
-          <div class="card-body">
-            <div class="fs-2 fw-bold text-info" id="disciplinasCount">0</div>
-            <div class="text-muted">Disciplinas</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Seção de Agendamento e Lista de Provas -->
-    <div class="row g-4 align-items-stretch">
-      <!-- Formulário de Agendamento -->
-      <div class="col-lg-5">
-        <div class="card h-100 shadow-sm" id="agendamento">
-          <div class="card-header card-header-custom">
-            <h3 class="card-title mb-0">
-              <i class="bi bi-calendar-plus me-2"></i>Agendar Nova Prova
-            </h3>
-          </div>
-          <div class="card-body">
-            <form id="formAgendamento" style="border-radius: 10px; padding: 20px;"
-              onsubmit="event.preventDefault(); agendarProva();">
-              <div class="mb-3">
-                <label class="form-label">Disciplina</label>
-                <select id="disciplina" class="form-select">
-                  <option value="">Selecione a disciplina</option>
-                  <option value="algoritmos">Algoritmos e Lógica de Programação</option>
-                  <option value="programacao">Programação Orientada a Objetos</option>
-                  <option value="bd">Banco de Dados</option>
-                  <option value="engenharia">Engenharia de Software</option>
-                  <option value="web">Desenvolvimento Web</option>
-                  <option value="redes">Redes de Computadores</option>
-                  <option value="seguranca">Segurança da Informação</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Data</label>
-                <input type="date" id="data" class="form-control">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Horário</label>
-                <select id="horario" class="form-select">
-                  <option value="">Selecione o horário</option>
-                  <option value="08:00">08:00 - 09:30</option>
-                  <option value="10:00">10:00 - 11:30</option>
-                  <option value="14:00">14:00 - 15:30</option>
-                  <option value="16:00">16:00 - 17:30</option>
-                </select>
-              </div>
-              <button type="submit" class="btn btn-primary w-100 mt-2"
-                style="background: linear-gradient(135deg, #0fab95 0%, #00a8cf 100%)">
-                Salvar
-              </button>
-            </form>
-          </div>
+        <div class="col-md-4 text-end">
+          <img src="images/estudantes.jpg" alt="Estudantes" class="img-fluid rounded" style="max-height: 200px" />
         </div>
       </div>
 
-      <!-- Lista de Provas Agendadas -->
-      <div class="col-lg-7">
-        <div class="card h-100 shadow-sm">
-          <div class="card-header card-header-custom">
-            <h3 class="card-title mb-0 text-white">
-              <i class="bi bi-list-check me-2"></i>Provas Agendadas
-            </h3>
-          </div>
-          <div class="card-body">
-            <div id="provasAgendadas" class="mb-3">
-              <!-- Provas agendadas aparecerão aqui -->
+      <div class="row">
+        <!-- Formulário de Agendamento -->
+        <div class="col-lg-5 mb-4">
+          <div class="card h-100 shadow-sm" id="agendamento">
+            <div class="card-header card-header-custom">
+              <h3 class="card-title mb-0"><i class="bi bi-calendar-plus me-2"></i>Agendar Nova Prova</h3>
             </div>
-            <div id="emptyState" class="text-center py-5 text-muted">
-              <svg class="mx-auto mb-3" height="48" width="48" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <p>Nenhuma prova agendada ainda</p>
-              <p class="text-sm">Use o formulário ao lado para agendar sua primeira prova</p>
+            <div class="card-body">
+              <form id="formAgendamento" style="border-radius: 10px; padding: 20px;"
+                onsubmit="event.preventDefault(); agendarProva();">
+                <div class="mb-3">
+                  <label class="form-label">Disciplina</label>
+                  <select id="disciplina" class="form-select">
+                    <option value="">Selecione a disciplina</option>
+                    <option value="algoritmos">Algoritmos e Lógica de Programação</option>
+                    <option value="programacao">Programação Orientada a Objetos</option>
+                    <option value="bd">Banco de Dados</option>
+                    <option value="engenharia">Engenharia de Software</option>
+                    <option value="web">Desenvolvimento Web</option>
+                    <option value="redes">Redes de Computadores</option>
+                    <option value="seguranca">Segurança da Informação</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Data</label>
+                  <input type="date" id="data" class="form-control">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Horário</label>
+                  <select id="horario" class="form-select">
+                    <option value="">Selecione o horário</option>
+                    <option value="08:00">08:00 - 09:30</option>
+                    <option value="10:00">10:00 - 11:30</option>
+                    <option value="14:00">14:00 - 15:30</option>
+                    <option value="16:00">16:00 - 17:30</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-2"
+                  style="background: linear-gradient(135deg, #0fab95 0%, #00a8cf 100%)">
+                  Salvar
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calendário/Lista de Provas Agendadas -->
+        <div class="col-lg-7 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header card-header-custom">
+              <h3 class="card-title mb-0 text-white">
+                <i class="bi bi-list-check me-2"></i>Provas Agendadas
+              </h3>
+            </div>
+            <div class="card-body">
+              <div id="provasAgendadas" class="mb-3">
+                <!-- Provas agendadas aparecerão aqui -->
+              </div>
+              <div id="emptyState" class="text-center py-5 text-muted">
+                <svg class="mx-auto mb-3" height="48" width="48" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p>Nenhuma prova agendada ainda</p>
+                <p class="text-sm">Use o formulário ao lado para agendar sua primeira prova</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards de Estatísticas -->
+        <div class="row mt-3">
+          <div class="col-md-4 mb-3">
+            <div class="card text-center shadow-sm">
+              <div class="card-body">
+                <div class="fs-2 fw-bold text-primary" id="totalProvas">0</div>
+                <div class="text-muted">Total de Provas</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <div class="card text-center shadow-sm">
+              <div class="card-body">
+                <div class="fs-2 fw-bold text-success" id="proximaProva">-</div>
+                <div class="text-muted">Próxima Prova</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <div class="card text-center shadow-sm">
+              <div class="card-body">
+                <div class="fs-2 fw-bold text-info" id="disciplinasCount">0</div>
+                <div class="text-muted">Disciplinas</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção de Contato -->
+    <div class="container my-5">
+      <div class="text-center mb-4">
+        <h3 class="fw-bold" id="contact">Contato</h3>
+        <p class="text-muted">Entre em contato conosco pelos canais abaixo</p>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card shadow border-0 rounded-4">
+            <div class="card-body p-4">
+              <ul class="list-unstyled mb-0">
+                <li class="mb-3">
+                  <i class="bi bi-envelope-fill text-primary me-2"></i>
+                  <strong>E-mail:</strong>
+                  <a href="mailto:rh@unifaa.edu.br" class="text-decoration-none text-dark">rh@unifaa.edu.br</a>
+                </li>
+                <li class="mb-3">
+                  <i class="bi bi-telephone-fill text-primary me-2"></i>
+                  <strong>Telefone:</strong>
+                  <a href="tel:+552440028922" class="text-decoration-none text-dark">(24) 4002-8922</a>
+                </li>
+                <li>
+                  <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                  <strong>Endereço:</strong>
+                  Av. Dr. Adolpho Pinto, 109 - Centro, Valença - RJ, 07020-020
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-      <!-- Contato -->
-      <section class="my-5" id="contact">
-        <div class="text-center mb-4">
-          <h3 class="fw-bold">Contato</h3>
-          <p class="text-muted">Entre em contato conosco pelos canais abaixo</p>
-        </div>
-        <div class="row justify-content-center">
-          <div class="col-md-6">
-            <div class="card shadow border-0 rounded-4">
-              <div class="card-body p-4">
-                <ul class="list-unstyled mb-0">
-                  <li class="mb-3">
-                    <i class="bi bi-envelope-fill text-primary me-2"></i>
-                    <strong>E-mail:</strong>
-                    <a href="mailto:rh@unifaa.edu.br" class="text-decoration-none text-dark">rh@unifaa.edu.br</a>
-                  </li>
-                  <li class="mb-3">
-                    <i class="bi bi-telephone-fill text-primary me-2"></i>
-                    <strong>Telefone:</strong>
-                    <a href="tel:+552440028922" class="text-decoration-none text-dark">(24) 4002-8922</a>
-                  </li>
-                  <li>
-                    <i class="bi bi-geo-alt-fill text-primary me-2"></i>
-                    <strong>Endereço:</strong> Av. Dr. Adolpho Pinto, 109 - Centro, Valença - RJ, 07020-020
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- Modal de Configurações -->
-  <div class="modal fade" id="configuracoesModal" tabindex="-1" aria-labelledby="configuracoesModalLabel" aria-hidden="true">
+  <!-- MODAL DE CONFIGURAÇÕES -->
+  <div class="modal fade" id="configuracoesModal" tabindex="-1" aria-labelledby="configuracoesModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content rounded-4 shadow">
         <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title"><i class="bi bi-gear me-2"></i>Configurações do Aluno</h5>
+          <h5 class="modal-title" id="configuracoesModalLabel">
+            <i class="bi bi-gear me-2"></i>Configurações do Aluno
+          </h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form id="formConfiguracoesAluno">
             <div class="mb-3">
               <label for="nomeAluno" class="form-label">Nome de Exibição</label>
-              <input type="text" id="nomeAluno" class="form-control" value="Lucas Gentil" required />
+              <input type="text" id="nomeAluno" class="form-control" value="Lucas Gentil" required>
             </div>
             <div class="mb-3">
               <label for="emailAluno" class="form-label">E-mail</label>
-              <input type="email" id="emailAluno" class="form-control" value="lucas@unifaa.edu.br" required />
+              <input type="email" id="emailAluno" class="form-control" value="lucas@unifaa.edu.br" required>
             </div>
             <div class="mb-3">
               <label class="form-label">Tema</label>
@@ -234,14 +240,17 @@
               </select>
             </div>
             <div class="form-check mb-3">
-              <input class="form-check-input" type="checkbox" id="notificacoesEmail" checked />
-              <label class="form-check-label" for="notificacoesEmail">Receber notificações por e-mail</label>
+              <input class="form-check-input" type="checkbox" id="notificacoesEmail" checked>
+              <label class="form-check-label" for="notificacoesEmail">
+                Receber notificações por e-mail
+              </label>
             </div>
             <div class="mb-3">
               <label for="senhaAluno" class="form-label">Alterar Senha</label>
-              <input type="password" id="senhaAluno" class="form-control" placeholder="Nova senha" />
+              <input type="password" id="senhaAluno" class="form-control" placeholder="Nova senha">
             </div>
-            <button type="submit" class="btn btn-primary w-100" style="background: linear-gradient(135deg, #0fab95 0%, #00a8cf 100%);">
+            <button type="submit" class="btn btn-primary w-100"
+              style="background: linear-gradient(135deg, #0fab95 0%, #00a8cf 100%)">
               <i class="bi bi-save me-2"></i>Salvar Alterações
             </button>
           </form>
@@ -251,9 +260,11 @@
   </div>
 
   <!-- Rodapé -->
-  <footer class="py-3">
-    <div class="container text-center">
-      <p class="text-muted" style="font-size: 12px;">&copy; 2025 UNIFAA - Desenvolvido por Alunos.</p>
+  <footer>
+    <div class="container">
+      <p class="text-center text-muted" style="padding: 20px; font-size: 10px;">
+        &copy; 2025 UNIFAA - Desenvolvido por Alunos.
+      </p>
     </div>
   </footer>
 
@@ -261,6 +272,7 @@
   <script src="js/main.js"></script>
 
   <script>
+    // Simulação de salvamento de configurações
     document.getElementById('formConfiguracoesAluno').addEventListener('submit', function (e) {
       e.preventDefault();
       alert('Configurações salvas com sucesso!');
@@ -268,6 +280,6 @@
       modal.hide();
     });
   </script>
-
 </body>
+
 </html>

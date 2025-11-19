@@ -1,8 +1,6 @@
 // js/main.js
 
-// --- CONFIGURAÇÕES E DADOS (MOCK) ---
-
-// Lista de Disciplinas (Igual ao Admin)
+// Lista COMPLETA de Disciplinas (Baseada no V2__seed_minimal.sql)
 const DISCIPLINAS = {
     '10000000-0000-0000-0000-000000000001': 'GAME DEVELOPER - DESENVOLVENDO SEU 1º GAME',
     '10000000-0000-0000-0000-000000000003': 'ANDROID DEVELOPER - CONSTRUINDO SEU 1º APP',
@@ -24,42 +22,22 @@ const DISCIPLINAS = {
     '10000000-0000-0000-0000-000000000019': 'STARTUP MANAGEMENT: CRIANDO STARTUP DATA DRIVEN'
 };
 
-// Mapeamento Provisório de Aluno -> Polo (Para testar sem mexer no Backend agora)
-// Baseado no V2__seed_minimal.sql
-const ALUNOS_POLO_MOCK = {
-    'E00001': 'P00001', // Alice -> Barra do Piraí
-    'E00002': 'P00001',
-    'E123': 'P00001'    // Seu usuário de teste
-};
-
-// Variável para guardar o Schedule atual selecionado
 let currentSchedule = null;
-let provas = []; // Lista local para exibição
-
-// --- INICIALIZAÇÃO ---
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Verificar Login
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (!userData) {
         window.location.href = 'portal.html';
         return;
     }
 
-    // 2. Preencher Nome do Aluno na tela
-    // (Se tiver um elemento com id 'nomeAlunoDisplay', preencha aqui)
+    // (Opcional) Preencher nome na tela
+    // document.getElementById('userNameDisplay').textContent = userData.name;
 
-    // 3. Inicializar Componentes
     popularDisciplinas();
     carregarMeusAgendamentos();
-    
-    // 4. Configurar Listeners do Formulário
     setupFormListeners();
-    
-    // Botão de sair/logout (opcional, se houver lógica específica)
 });
-
-// --- FUNÇÕES DE INTEGRAÇÃO (API) ---
 
 function getToken() {
     return localStorage.getItem('authToken');
@@ -72,13 +50,11 @@ function getAuthHeaders() {
     };
 }
 
-// 1. Preenche o Select de Disciplinas
 function popularDisciplinas() {
     const select = document.getElementById('disciplina');
     if (!select) return;
 
     select.innerHTML = '<option value="">Selecione a disciplina</option>';
-    
     for (const [id, nome] of Object.entries(DISCIPLINAS)) {
         const option = document.createElement('option');
         option.value = id;
@@ -87,16 +63,13 @@ function popularDisciplinas() {
     }
 }
 
-// 2. Configura a lógica de cascata (Disciplina -> Data -> Horário)
 function setupFormListeners() {
     const disciplinaSelect = document.getElementById('disciplina');
     const dataInput = document.getElementById('data');
     const horarioSelect = document.getElementById('horario');
-    const form = document.getElementById('formAgendamento'); // Confirme o ID no HTML
 
-    // A. Quando mudar a Disciplina: Busca o Schedule (Janela de Datas)
+    // Quando mudar a Disciplina
     disciplinaSelect.addEventListener('change', async function() {
-        // Limpa campos dependentes
         dataInput.value = '';
         dataInput.disabled = true;
         horarioSelect.innerHTML = '<option value="">Selecione o horário</option>';
@@ -107,49 +80,47 @@ function setupFormListeners() {
         if (!subjectId) return;
 
         const userData = JSON.parse(localStorage.getItem('userData'));
-        // Tenta pegar o polo do mock ou do userData (se o backend enviar no futuro)
-        const poloId = ALUNOS_POLO_MOCK[userData.id] || userData.poloId || 'P00001';
+        
+        // --- CORREÇÃO: Pegando o Polo REAL vindo do Login ---
+        const poloId = userData.poloId;
+
+        if (!poloId) {
+            alert("Erro: Seu usuário não está vinculado a nenhum polo. Contate a secretaria.");
+            return;
+        }
 
         try {
-            // Busca Schedules para esse Polo + Disciplina
             const url = `http://localhost:8080/api/schedules?poloId=${poloId}&subjectId=${subjectId}`;
             const resp = await fetch(url, { headers: getAuthHeaders() });
             
             if(resp.ok) {
                 const schedules = await resp.json();
                 if (schedules.length > 0) {
-                    // Pegamos o primeiro schedule válido
                     currentSchedule = schedules[0];
-                    
-                    // Habilita a data e define limites
                     dataInput.disabled = false;
                     dataInput.min = currentSchedule.startDate;
                     dataInput.max = currentSchedule.endDate;
-                    
-                    alert(`Disciplina disponível de ${formatarDataPTBR(currentSchedule.startDate)} até ${formatarDataPTBR(currentSchedule.endDate)}`);
+                    alert(`Agenda encontrada!\nDatas disponíveis: ${formatarDataPTBR(currentSchedule.startDate)} até ${formatarDataPTBR(currentSchedule.endDate)}`);
                 } else {
                     alert('Não há agenda cadastrada para esta disciplina no seu polo.');
                 }
             }
         } catch (err) {
-            console.error(err);
+            console.error("Erro ao buscar schedule:", err);
         }
     });
 
-    // B. Quando mudar a Data: Busca os TimeSlots (Horários) para aquele dia da semana
+    // Quando mudar a Data
     dataInput.addEventListener('change', async function() {
         horarioSelect.innerHTML = '<option value="">Carregando...</option>';
         horarioSelect.disabled = true;
 
         if (!this.value || !currentSchedule) return;
 
-        const dateSelected = new Date(this.value);
-        // Pega o dia da semana (mon, tue, wed...)
-        const diasSemana = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-        // getDay() retorna 0 (Domingo) a 6 (Sábado). O backend usa UTC/Local, cuidado com fuso.
-        // Dica: Para garantir o dia correto da string "YYYY-MM-DD", faça:
+        // Lógica para pegar o dia da semana correto (sem problemas de fuso horário)
         const [y, m, d] = this.value.split('-');
-        const dataObj = new Date(y, m - 1, d); 
+        const dataObj = new Date(y, m - 1, d);
+        const diasSemana = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
         const dayStr = diasSemana[dataObj.getDay()];
 
         if (dayStr === 'sun') {
@@ -159,25 +130,22 @@ function setupFormListeners() {
         }
 
         try {
-            // Busca Slots
             const url = `http://localhost:8080/api/schedules/${currentSchedule.id}/timeslots?day=${dayStr}`;
             const resp = await fetch(url, { headers: getAuthHeaders() });
             
             if (resp.ok) {
                 const slots = await resp.json();
-                
                 horarioSelect.innerHTML = '<option value="">Selecione o horário</option>';
                 
                 if (slots.length === 0) {
                     const option = document.createElement('option');
-                    option.text = "Sem horários para este dia da semana";
+                    option.text = "Sem horários para este dia";
                     horarioSelect.appendChild(option);
                 } else {
                     slots.forEach(slot => {
                         const option = document.createElement('option');
-                        // O backend retorna startTime "09:00:00", cortamos para "09:00"
                         const horaSimples = slot.startTime.substring(0, 5);
-                        option.value = slot.startTime; // "09:00:00"
+                        option.value = slot.startTime;
                         option.textContent = horaSimples;
                         horarioSelect.appendChild(option);
                     });
@@ -191,7 +159,6 @@ function setupFormListeners() {
     });
 }
 
-// 3. Função de Agendar (Submit)
 async function agendarProva() {
     const disciplinaId = document.getElementById('disciplina').value;
     const data = document.getElementById('data').value;
@@ -203,12 +170,12 @@ async function agendarProva() {
     }
 
     const userData = JSON.parse(localStorage.getItem('userData'));
-    const poloId = ALUNOS_POLO_MOCK[userData.id] || 'P00001';
-
+    
+    // Usando o polo REAL do usuário
     const bookingDTO = {
         subjectId: disciplinaId,
         studentId: userData.id,
-        poloId: poloId,
+        poloId: userData.poloId, 
         date: data,
         time: horario
     };
@@ -227,9 +194,12 @@ async function agendarProva() {
         }
 
         alert('Agendamento realizado com sucesso!');
-        // Limpa form
-        document.getElementById('formAgendamento').reset(); // Se seu form tiver esse ID
-        // Recarrega lista
+        document.getElementById('formAgendamento').reset();
+        
+        // Bloqueia os campos novamente após salvar
+        document.getElementById('data').disabled = true;
+        document.getElementById('horario').disabled = true;
+        
         carregarMeusAgendamentos();
 
     } catch (err) {
@@ -238,7 +208,6 @@ async function agendarProva() {
     }
 }
 
-// 4. Carregar Agendamentos do Aluno (Lista da direita)
 async function carregarMeusAgendamentos() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     const container = document.getElementById('provasAgendadas');
@@ -252,6 +221,10 @@ async function carregarMeusAgendamentos() {
         if (resp.ok) {
             const bookings = await resp.json();
             
+            // Atualiza contadores
+            const totalEl = document.getElementById('totalProvas');
+            if(totalEl) totalEl.textContent = bookings.length;
+
             if (bookings.length === 0) {
                 container.innerHTML = '';
                 if(emptyState) emptyState.style.display = 'block';
@@ -274,31 +247,19 @@ async function carregarMeusAgendamentos() {
                                 <i class="bi bi-calendar-event me-1"></i> ${dataF} às ${horaF}
                             </p>
                             <span class="badge bg-success">Confirmado</span>
-                            </div>
+                        </div>
                     </div>
                 `;
                 container.insertAdjacentHTML('beforeend', html);
             });
-            
-            // Atualiza contadores
-            document.getElementById('totalProvas').textContent = bookings.length;
-            // (Pode adicionar lógica para 'Próxima Prova' aqui)
         }
     } catch (err) {
         console.error(err);
     }
 }
 
-// --- UTILITÁRIOS ---
-
 function formatarDataPTBR(dataIso) {
     if(!dataIso) return '';
     const [y, m, d] = dataIso.split('-');
     return `${d}/${m}/${y}`;
 }
-
-// (Opcional) Expor função agendarProva para o HTML chamar no onsubmit
-window.agendarProva = function(e) {
-    if(e) e.preventDefault();
-    agendarProva();
-};

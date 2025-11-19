@@ -44,30 +44,60 @@ function hideError() {
 }
 
 // submit com validação
-loginForm.addEventListener('submit', function (e) {
+// Em: js/portal.js
+
+loginForm.addEventListener('submit', async function (e) {
   e.preventDefault();
   hideError();
 
-  const username = usernameInput.value.trim();
+  // 1. Pegue os valores REAIS do formulário
+  // O usuário não deve digitar 'E123', mas sim seu email real.
+  const email = usernameInput.value.trim(); // O campo username agora é para email
   const password = passwordInput.value;
+  
+  // Dica: Para testar o admin, digite:
+  // Email: admin@unifaa.edu.br
+  // Senha: RealChallengeUNIFAA
 
-  if (password !== DEFAULT_PASSWORD) {
-    showError('Senha incorreta. Use a senha padrão "123".');
-    return;
-  }
+  // 2. Chame a API de Login da 'dev-lais'
+  try {
+    const response = await fetch('http://localhost:8080/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // O backend espera um LoginRequestDTO
+      body: JSON.stringify({ email: email, password: password }) 
+    });
 
-  const expected = PRESETS[selectedRole];
-  if (username !== expected) {
-    showError(`Usuário inválido para o perfil selecionado. Esperado: ${expected}`);
-    return;
-  }
+    if (!response.ok) {
+      showError('Email ou senha inválidos.');
+      return;
+    }
 
-  // redireciona
-  if (selectedRole === 'aluno') {
-    window.location.href = 'dashboard.html';
-  } else if (selectedRole === 'administrativo') {
-    window.location.href = 'admin.html';
-  } else if (selectedRole === 'polo') {
-    window.location.href = 'dashboardpolo.html';
+    // 3. Receba a AuthResponse
+    const data = await response.json(); // Contém data.token, data.id, data.type
+
+    // 4. SALVE O TOKEN! Este é o passo mais importante.
+    localStorage.setItem('authToken', data.token);
+    // Salve também os dados do usuário para usar nas telas
+    localStorage.setItem('userData', JSON.stringify(data));
+
+    // 5. Redirecione baseado no TIPO (role) vindo do backend
+    switch (data.type) {
+      case 'STUDENT':
+        window.location.href = 'dashboard.html';
+        break;
+      case 'ADMIN':
+        window.location.href = 'admin.html';
+        break;
+      case 'POLO':
+        window.location.href = 'dashboardpolo.html';
+        break;
+      default:
+        showError('Tipo de usuário desconhecido.');
+    }
+
+  } catch (err) {
+    console.error('Erro ao tentar logar:', err);
+    showError('Erro de conexão com o servidor.');
   }
 });

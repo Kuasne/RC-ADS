@@ -3,85 +3,118 @@ const PRESETS = {
   administrativo: 'A123',
   polo: 'P123'
 };
-const DEFAULT_PASSWORD = '123';
 
-// elementos
+// Mapeamento entre o "data-role" do botão HTML e o "type" que vem do Backend (Java)
+const ROLE_MAP = {
+  'aluno': 'STUDENT',
+  'administrativo': 'ADMIN',
+  'polo': 'POLO'
+};
+
 const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
 const loginForm = document.getElementById('loginForm');
 const loginError = document.getElementById('loginError');
 const navButtons = document.querySelectorAll('.nav-button');
 
-// estado inicial
+// Estado inicial: pega o botão que já está com a classe active no HTML
 let selectedRole = document.querySelector('.nav-button.active')?.dataset.role || 'aluno';
 
-// função para aplicar role e preencher username
+// Função para aplicar role e preencher username (para testes)
 function applyRole(role) {
   selectedRole = role;
-  navButtons.forEach(b => b.classList.toggle('active', b.dataset.role === role));
-  usernameInput.value = PRESETS[role];
+  
+  // Atualiza visualmente os botões
+  navButtons.forEach(b => {
+    if (b.dataset.role === role) {
+      b.classList.add('active');
+    } else {
+      b.classList.remove('active');
+    }
+  });
+
+  // Preenche para facilitar o teste (pode remover em produção)
+  usernameInput.value = PRESETS[role] || '';
   passwordInput.value = '';
   hideError();
 }
 
-// listeners dos botões
+// Listeners dos botões de navegação (Estudante, Adm, Polo)
 navButtons.forEach(btn => {
   btn.addEventListener('click', function () {
+    // Ao clicar, atualizamos a variável selectedRole com o data-role do botão
     applyRole(this.dataset.role);
   });
 });
 
-// inicializa
+// Inicializa
 document.addEventListener('DOMContentLoaded', () => applyRole(selectedRole));
 
 function showError(msg) {
   loginError.textContent = msg;
   loginError.style.display = 'block';
+  // Adiciona uma animação visual de erro
+  loginError.classList.add('fade-in');
 }
+
 function hideError() {
   loginError.textContent = '';
   loginError.style.display = 'none';
 }
 
-// submit com validação
-// Em: js/portal.js
-
+// --- Lógica de Login ---
 loginForm.addEventListener('submit', async function (e) {
   e.preventDefault();
   hideError();
 
-  // 1. Pegue os valores REAIS do formulário
-  // O usuário não deve digitar 'E123', mas sim seu email real.
-  const email = usernameInput.value.trim(); // O campo username agora é para email
+  const email = usernameInput.value.trim();
   const password = passwordInput.value;
-  
-  // Dica: Para testar o admin, digite:
-  // Email: admin@unifaa.edu.br
-  // Senha: RealChallengeUNIFAA
 
-  // 2. Chame a API de Login da 'dev-lais'
+  if (!email || !password) {
+    showError('Por favor, preencha usuário e senha.');
+    return;
+  }
+
   try {
     const response = await fetch('http://localhost:8080/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      // O backend espera um LoginRequestDTO
       body: JSON.stringify({ email: email, password: password }) 
     });
 
     if (!response.ok) {
-      showError('Email ou senha inválidos.');
+      // Se for 401 ou 403
+      showError('Usuário ou senha inválidos.');
       return;
     }
 
-    // 3. Receba a AuthResponse
-    const data = await response.json(); // Contém data.token, data.id, data.type
+    // Recebe a resposta do Backend (AuthResponse)
+    const data = await response.json(); 
+    // data contém: { token: "...", type: "ADMIN", ... }
 
-    // 4. SALVE O TOKEN! Este é o passo mais importante.
+    // --- VALIDAÇÃO DE SEGURANÇA DO PORTAL ---
+    
+    // 1. Descobre qual tipo de usuário o Backend retornou
+    const userTypeFromBackend = data.type; // Ex: 'ADMIN', 'STUDENT', 'POLO'
+
+    // 2. Descobre qual tipo o usuário ESTÁ TENTANDO acessar (baseado no botão clicado)
+    const expectedType = ROLE_MAP[selectedRole]; // Converte 'aluno' para 'STUDENT'
+
+    // 3. Compara se coincidem
+    if (userTypeFromBackend !== expectedType) {
+        // Se não bater, bloqueia o acesso
+        showError(`Acesso negado! Esta conta é de ${traduzirRole(userTypeFromBackend)} e não pode logar na aba de ${traduzirRole(expectedType)}.`);
+        
+        // Opcional: Limpar o token que acabou de ser gerado para não deixar rastro
+        localStorage.removeItem('authToken');
+        return; 
+    }
+
+    // Se chegou aqui, o tipo está correto. Salva e redireciona.
     localStorage.setItem('authToken', data.token);
-    // Salve também os dados do usuário para usar nas telas
     localStorage.setItem('userData', JSON.stringify(data));
 
-    // 5. Redirecione baseado no TIPO (role) vindo do backend
+    // Redirecionamento
     switch (data.type) {
       case 'STUDENT':
         window.location.href = 'dashboard.html';
@@ -101,3 +134,13 @@ loginForm.addEventListener('submit', async function (e) {
     showError('Erro de conexão com o servidor.');
   }
 });
+
+// Função auxiliar apenas para deixar a mensagem de erro mais bonita
+function traduzirRole(role) {
+    const dicionario = {
+        'STUDENT': 'Estudante',
+        'ADMIN': 'Administrativo',
+        'POLO': 'Polo'
+    };
+    return dicionario[role] || role;
+}

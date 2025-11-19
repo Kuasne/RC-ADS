@@ -1,3 +1,17 @@
+// Helper para pegar o token salvo no login
+function getToken() {
+  return localStorage.getItem('authToken');
+}
+
+// Helper para criar os headers de autenticação
+function getAuthHeaders() {
+  const token = getToken();
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}` // Envia o JWT
+  };
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   
   //LÓGICA DA SIDEBAR
@@ -46,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
   carregarProvasSalvas();
 
   // "Ouvinte" de evento para o envio do formulário
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault(); // Impede o recarregamento da página
 
     // 1. Obter os dados do formulário
@@ -74,29 +88,67 @@ document.addEventListener('DOMContentLoaded', function () {
     // Criar o novo texto de informação (Período)
     const infoHorario = `de ${dataInicioFormatada} a ${dataFimFormatada}`;
 
-    // 2. Criar o objeto da prova
-    const novaProva = {
-      id: Date.now(),
-      disciplina: disciplinaTexto,
-      polo: poloTexto,
-      infoHorario: infoHorario,
-      status: "Agendado"
+   // 2. Montar o objeto que o Backend espera (DTO)
+    const scheduleDTO = {
+      // ATENÇÃO: Os valores dos <option> no seu HTML precisam ser os IDs reais do banco!
+      // Ex: disciplinaSelect.value deve ser um UUID (ex: "1000...004")
+      // Ex: poloSelect.value deve ser a matrícula (ex: "P00001")
+      poloId: poloSelect.value, 
+      subjectId: disciplinaSelect.value,
+      startDate: dataInicioInput.value,
+      endDate: dataFimInput.value
     };
 
-    // 3. Adicionar a prova na lista (HTML)
-    adicionarProvaNaListaHTML(novaProva);
+    try {
+      // 3. Enviar para a API (Criar Schedule)
+      const response = await fetch('http://localhost:8080/api/schedules', {
+        method: 'POST',
+        headers: getAuthHeaders(), // Certifique-se de ter criado essa função helper
+        body: JSON.stringify(scheduleDTO)
+      });
 
-    // 4. Salvar no localStorage
-    salvarProvaNoStorage(novaProva);
+      if (!response.ok) {
+        const erro = await response.json();
+        alert(`Erro ao salvar: ${erro.message || 'Verifique os dados'}`);
+        return;
+      }
 
-    // 5. Limpar o formulário
-    form.reset();
+      const scheduleCriado = await response.json();
 
-    // 6. Reativar todos os dias que foram desativados
-    document.querySelectorAll('.horario-dia-row.dia-desativado').forEach(row => {
-      row.classList.remove('dia-desativado');
-      row.querySelectorAll('select').forEach(s => s.disabled = false);
-    });
+      // 4. Gerar os Horários (Slots) Automaticamente
+      // Esse passo é necessário conforme a regra de negócio do backend
+      await fetch(`http://localhost:8080/api/schedules/${scheduleCriado.id}/timeslots/bulk`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+      });
+
+      // 5. Atualizar a Tela (Visual)
+      // Adaptamos a resposta da API para o formato que sua função de lista espera
+      const provaParaTela = {
+        id: scheduleCriado.id,
+        disciplina: disciplinaTexto, // Texto pego do select
+        polo: poloTexto,             // Texto pego do select
+        infoHorario: infoHorario,
+        status: "Agendado"
+      };
+      
+      adicionarProvaNaListaHTML(provaParaTela);
+      
+      // Sucesso! Limpa tudo
+      form.reset();
+      
+      // Reativar os dias desativados (seu código original)
+      document.querySelectorAll('.horario-dia-row.dia-desativado').forEach(row => {
+        row.classList.remove('dia-desativado');
+        row.querySelectorAll('select').forEach(s => s.disabled = false);
+      });
+
+      alert('Agendamento criado com sucesso!');
+
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro de conexão com o servidor.');
+    };
   });
 
   //LÓGICA PARA EXCLUIR ITENS DA LISTA
@@ -177,42 +229,95 @@ document.addEventListener('DOMContentLoaded', function () {
    * Salva um objeto de prova no localStorage.
    * @param {object} prova - O objeto da prova a ser salvo.
    */
-  function salvarProvaNoStorage(prova) {
-    try {
-      const provasSalvas = JSON.parse(localStorage.getItem('listaProvasAdmin')) || [];
-      provasSalvas.push(prova);
-      localStorage.setItem('listaProvasAdmin', JSON.stringify(provasSalvas));
-    } catch (error) {
-      console.error("Erro ao salvar no localStorage:", error);
+  async function salvarProvaNaAPI(prova) {
+  try {
+    const response = await fetch('http://localhost:8080/api/v1/bookings', { // URL do Backend
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(prova)
+    });
+
+    if (!response.ok) {
+        alert('Erro ao salvar agendamento!');
     }
+    // Opcional: recarregar a lista após salvar
+    carregarProvasSalvas(); 
+  } catch (error) {
+    console.error("Erro ao salvar prova na API:", error);
   }
+}
 
   /**
    * Remove uma prova do localStorage pelo ID.
    * @param {string} id - O ID da prova a ser removida.
    */
-  function removerProvaDoStorage(id) {
-    try {
-      const provasSalvas = JSON.parse(localStorage.getItem('listaProvasAdmin')) || [];
-      const provasAtualizadas = provasSalvas.filter(prova => prova.id.toString() !== id);
-      localStorage.setItem('listaProvasAdmin', JSON.stringify(provasAtualizadas));
-    } catch (error) {
-      console.error("Erro ao remover do localStorage:", error);
-    }
-  }
+  // Em: js/admin.js
+async function removerProvaDoStorage(idParaRemover) {
+  try {
+    const response = await fetch(`http://localhost:8080/api/schedules/${idParaRemover}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
 
-  /*Carrega e exibe as provas já salvas no localStorage.*/
-  function carregarProvasSalvas() {
-    try {
-      const provasSalvas = JSON.parse(localStorage.getItem('listaProvasAdmin')) || [];
-      listaProvas.innerHTML = ''; // Limpa a lista antes de carregar
-      provasSalvas.forEach(prova => {
-        adicionarProvaNaListaHTML(prova);
-      });
-    } catch (error) {
-      console.error("Erro ao carregar provas do localStorage:", error);
+    if (!response.ok) {
+      alert('Erro ao excluir schedule.');
     }
+    // Se deu certo (status 204), o item já foi removido da tela
+    // no 'listaProvas.addEventListener('click', ...)'
+  } catch (error) {
+    console.error("Erro ao remover do localStorage:", error);
   }
+}
+
+  /*Carrega e exibe as provas já salvas.*/
+  
+  // Em: js/admin.js
+async function carregarProvasSalvas() {
+  try {
+    const response = await fetch('http://localhost:8080/api/schedules', {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+    
+    if (!response.ok) return;
+
+    const schedules = await response.json(); 
+    const listaProvas = document.getElementById('provasAgendadasList');
+    listaProvas.innerHTML = ''; // Limpa a lista
+    
+    schedules.forEach(schedule => {
+        // AQUI ESTÁ A MÁGICA: Usamos o ID para buscar o nome no dicionário
+        const nomeDisciplina = DISCIPLINAS[schedule.subjectId] || schedule.subjectId; // Se não achar, mostra o ID mesmo
+        const nomePolo = POLOS[schedule.poloId] || schedule.poloId;
+
+        // Formata datas para PT-BR
+        const inicio = new Date(schedule.startDate).toLocaleDateString('pt-BR');
+        const fim = new Date(schedule.endDate).toLocaleDateString('pt-BR');
+
+        const html = `
+        <div class="prova-item" data-id="${schedule.id}">
+            <div class="prova-item-details">
+            <h5 class="prova-title">${nomeDisciplina}</h5>
+            <div class="prova-meta">
+                <span><i class="bi bi-calendar"></i> de ${inicio} até ${fim}</span> 
+                <span><i class="bi bi-geo-alt"></i> ${nomePolo}</span>
+            </div>
+            </div>
+            <div class="prova-item-actions">
+            <span class="prova-item-badge">Agendado</span>
+            <button class="btn-delete-prova" onclick="removerProvaDoStorage('${schedule.id}')">
+                <i class="bi bi-trash-fill"></i>
+            </button>
+            </div>
+        </div>
+        `;
+        listaProvas.insertAdjacentHTML('beforeend', html);
+    });
+
+  } catch (error) {
+    console.error("Erro ao carregar:", error);
+  }
+}
 
   /**
    * Converte uma data do formato 'YYYY-MM-DD' para 'DD/MM/YYYY'.
@@ -224,3 +329,95 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   
 });
+// --- INÍCIO DO MAPEAMENTO (Copie e cole no início do js/admin.js) ---
+
+// Lista Completa de Disciplinas (Extraída do V2__seed_minimal.sql)
+const DISCIPLINAS = {
+    '10000000-0000-0000-0000-000000000001': 'GAME DEVELOPER - DESENVOLVENDO SEU 1º GAME',
+    '10000000-0000-0000-0000-000000000003': 'ANDROID DEVELOPER - CONSTRUINDO SEU 1º APP',
+    '10000000-0000-0000-0000-000000000004': 'BACK-END DEVELOPER - CONHECENDO BANCO DE DADOS E INTEGRANDO APLICAÇÕES',
+    '10000000-0000-0000-0000-000000000005': 'FRONT-END DEVELOPER - CRIANDO APLICAÇÕES PARA AMBIENTE WEB',
+    '10000000-0000-0000-0000-000000000006': 'UX/UI MOBILE DEVELOPER - CONSTRUINDO APLICAÇÕES MOBILE COM FOCO NA EXPERIÊNCIA DO USUÁRIO',
+    '10000000-0000-0000-0000-000000000007': 'SOFTWARE QUALITY ASSURANCE (SQA) - GARANTINDO A QUALIDADE DOS SOFTWARES',
+    '10000000-0000-0000-0000-000000000008': 'CIBER SECURITY ESSENCIALS - CONHECENDO ESTRATÉGIAS DE DEFESA CIBERNÉTICA',
+    '10000000-0000-0000-0000-000000000009': 'BUSINESS CHALLENGE - ENGENHARIA DE SOFTWARE I',
+    '10000000-0000-0000-0000-000000000010': 'WINDOWS SERVER MANAGEMENT (ADMINISTRANDO SERVIÇOS DE SEGURANÇA WINDOWS)',
+    '10000000-0000-0000-0000-000000000011': 'LINUX SECURITY - IMPLEMENTANDO SERVIÇOS DE SEGURANÇA LINUX',
+    '10000000-0000-0000-0000-000000000012': 'IOT DEVELOPER - CRIANDO EQUIPAMENTOS CONECTADOS',
+    '10000000-0000-0000-0000-000000000013': 'CLOUD SECURITY - IMPLEMENTANDO SERVIÇOS EM NUVEM',
+    '10000000-0000-0000-0000-000000000014': 'IT LAW SPECIALIST - COMPREENDENDO OS ASPECTOS ÉTICOS E LEGAIS, SOCIOECONÔMICOS DO DESENVOLVIMENTO DE SOFTWARE',
+    '10000000-0000-0000-0000-000000000015': 'IA - MACHINE LEARNING - CONSTRUINDO APLICAÇÕES COM INTELIGÊNCIA ARTIFICIAL',
+    '10000000-0000-0000-0000-000000000016': 'BUSINESS CHALLENGE - ENGENHARIA DE SOFTWARE II',
+    '10000000-0000-0000-0000-000000000017': 'IT MANAGER - GERENCIANDO OPERAÇÕES DE TECNOLOGIA',
+    '10000000-0000-0000-0000-000000000018': 'DESRUPT IR SPECIALIST - EXPLORANDO OS NOVOS HORIZONTES DAS TECNOLOGIAS',
+    '10000000-0000-0000-0000-000000000019': 'STARTUP MANAGEMENT: CRIANDO STARTUP DATA DRIVEN'
+};
+
+// Lista Completa de Polos (Extraída do V2__seed_minimal.sql)
+const POLOS = {
+    'P00001': 'Polo Barra do Piraí',
+    'P00002': 'Polo Barra Mansa',
+    'P00003': 'Polo Paty do Alferes',
+    'P00004': 'Polo Petrópolis',
+    'P00005': 'Polo Resende',
+    'P00006': 'Polo Três Rios',
+    'P00007': 'Polo Valença',
+    'P00008': 'Polo Volta Redonda'
+};
+
+function popularSelects() {
+    const selectDisciplina = document.getElementById('disciplinaAdmin');
+    const selectPolo = document.getElementById('poloAdmin');
+
+    // Limpa e preenche Disciplinas
+    if (selectDisciplina) {
+        selectDisciplina.innerHTML = '<option value="">Selecione a Disciplina</option>';
+        for (const [id, nome] of Object.entries(DISCIPLINAS)) {
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = nome;
+            selectDisciplina.appendChild(option);
+        }
+    }
+
+    // Limpa e preenche Polos
+    if (selectPolo) {
+        selectPolo.innerHTML = '<option value="">Selecione o Polo</option>';
+        for (const [id, nome] of Object.entries(POLOS)) {
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = nome;
+            selectPolo.appendChild(option);
+        }
+    }
+}
+
+// Chama a função automaticamente
+popularSelects();
+
+// --- FIM DO MAPEAMENTO ---
+function popularSelects() {
+    const selectDisciplina = document.getElementById('disciplinaAdmin');
+    const selectPolo = document.getElementById('poloAdmin');
+
+    // Limpa e preenche Disciplinas
+    selectDisciplina.innerHTML = '<option value="">Selecione a Disciplina</option>';
+    for (const [id, nome] of Object.entries(DISCIPLINAS)) {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = nome;
+        selectDisciplina.appendChild(option);
+    }
+
+    // Limpa e preenche Polos
+    selectPolo.innerHTML = '<option value="">Selecione o Polo</option>';
+    for (const [id, nome] of Object.entries(POLOS)) {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = nome;
+        selectPolo.appendChild(option);
+    }
+}
+
+// CHAME ESTA FUNÇÃO LOGO NO INÍCIO, ANTES DE 'carregarProvasSalvas()'
+popularSelects();

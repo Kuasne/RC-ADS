@@ -1,8 +1,8 @@
-const PRESETS = {
-  aluno: 'E123',
-  administrativo: 'A123',
-  polo: 'P123'
-};
+// const PRESETS = {
+//   aluno: 'E123',
+//   administrativo: 'A123',
+//   polo: 'P123'
+// };
 
 // Mapeamento entre o "data-role" do botão HTML e o "type" que vem do Backend (Java)
 const ROLE_MAP = {

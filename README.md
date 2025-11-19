@@ -2,6 +2,8 @@
 
 Este projeto é um sistema de agendamento de provas para o Centro Universitário de Valença (UNIFAA). A plataforma foi desenvolvida durante a disciplina Real Challenge - ADS com o intuito de otimizar o processo de marcação de provas, oferecendo portais específicos e funcionais para alunos, administradores e polos educacionais.
 
+* Separamos o projeto em 2 repositórios, tendo o presente contendo todo conteúdo do Frontend e o código do Backend, bem como as instruções para o seu funcinamento, pode ser entrado no [Repostório do Backend]([https](https://github.com/Fabiaudi/ADS-UNIFAA-4-semestre-RealChallenge-ADS-BACKEND).
+
 ## 🏆 Funcionalidades
 
 * **Portal do Aluno:** Permite que os alunos agendem, visualizem e gerenciem seus agendamentos de provas de forma simples e intuitiva.
@@ -12,17 +14,8 @@ Este projeto é um sistema de agendamento de provas para o Centro Universitário
 
 ## 🔑 Credenciais de Acesso
 
-Para fins de demonstração, criamos um prefixo para cada tipo de usuário sendo **E** para Estudante, **A** para Administrador e **P** para Pólo. A senha padrão para todos os perfis é **123**.
+Para fins de demonstração, utilizaremos credenciais (e-mail e senha) previamente criadas e fornecidas pela equipe de Backend.
 
-* **Estudante/Aluno:**
-    * **Usuário:** `E123`
-    * **Senha:** `123`
-* **Administrador:**
-    * **Usuário:** `A123`
-    * **Senha:** `123`
-* **Polo:**
-    * **Usuário:** `P123`
-    * **Senha:** `123`
 
 ## 🛠️ Construído Com
 

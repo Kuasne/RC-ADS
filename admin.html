@@ -1,87 +1,437 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - UNIFAA</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
-  <link href="css/style.css" rel="stylesheet" />
-</head>
-<body class="dashboard-page">
-  <nav class="navbar navbar-expand-lg navbar-custom">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#"><span class="text-white fw-bold">Área Administrativa</span></a>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link text-white" href="#" onclick="logout()">Sair</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administrador - UNIFAA</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link href="css/style.css" rel="stylesheet" />
+  </head>
 
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-3 col-lg-2 px-0">
-        <div class="sidebar-nav bg-white shadow-sm" style="height: 90vh">
-          <div class="list-group list-group-flush pt-1">
-            <a href="#" class="list-group-item active">Agendamentos</a>
-          </div>
+  <body class="dashboard-page">
+    <nav class="navbar navbar-expand-lg navbar-custom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="images/unifaa-logo.png" alt="UNIFAA" class="me-2" />
+          <span class="text-white fw-bold">Área Administrativa</span>
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                <i class="bi bi-person-gear me-1"></i>Administrador
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="#"
+                    ><i class="bi bi-person me-2"></i>Perfil</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#"
+                    ><i class="bi bi-gear me-2"></i>Configurações</a
+                  >
+                </li>
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
+                <li>
+                  <a class="dropdown-item" href="./portal.html"
+                    ><i class="bi bi-box-arrow-right me-2"></i>Sair</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
+    </nav>
 
-      <div class="col-md-9 col-lg-10">
-        <div class="main-content p-4">
-          <h2 class="main-title mt-3 mb-4">Gerenciar Agendas</h2>
-          <div class="row">
-            <div class="col-lg-5">
-              <div class="card form-card shadow-sm">
-                <div class="card-header form-card-header"><h4 class="card-title mb-0 text-white">Nova Agenda</h4></div>
-                <div class="card-body">
-                  <form id="agendamentoAdminForm">
-                    <div class="mb-3">
-                      <label class="form-label">Disciplina</label>
-                      <select id="disciplinaAdmin" class="form-select" required>
-                        <option value="">Selecione</option>
-                        <option value="game">GAME DEVELOPER - DESENVOLVENDO SEU 1º GAME</option> 
-                        <option value="frontend">Front-end</option>
-                        <option value="backend">Back-end</option>
-                        <option value="game">Game Dev</option>
-                      </select>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3 col-lg-2 px-0">
+          <div
+            class="sidebar-nav bg-white shadow-sm"
+            style="height: 97.5%"
+          >
+            <div class="list-group list-group-flush pt-1">
+              <a
+                href="#agendamentos"
+                class="list-group-item list-group-item-action active"
+              >
+                <i class="bi bi-calendar-check me-2"></i>Agendamentos
+              </a>
+              <a
+                href="#disciplinas"
+                class="list-group-item list-group-item-action"
+              >
+                <i class="bi bi-book me-2"></i>Disciplinas
+              </a>
+              <a
+                href="#cadastros"
+                class="list-group-item list-group-item-action"
+              >
+                <i class="bi bi-person-plus me-2"></i>Cadastros
+              </a>
+              <a
+                href="#configuracoes"
+                class="list-group-item list-group-item-action"
+              >
+                <i class="bi bi-gear me-2"></i>Configurações
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-9 col-lg-10">
+          <div class="main-content p-4">
+            <h2 class="main-title mt-5 mb-5">Seja Bem Vindo Administrador!</h2>
+
+
+            <div id="agendamentos-content">
+              <div class="row">
+                <div class="col-lg-5">
+                  <!-- <button
+                    id="btnNovoAgendamento" 
+                    class="btn btn-novo-agendamento w-100 mb-3"
+                  >
+                    <i class="bi bi-plus-circle me-2"></i>Novo Agendamento
+                  </button> -->
+
+                  <div class="card form-card shadow-sm">
+                    <div class="card-header form-card-header">
+                      <h4 class="card-title mb-0">Dados do Agendamento</h4>
                     </div>
-                    <div class="mb-3">
-                      <label class="form-label">Polo</label>
-                      <select id="poloAdmin" class="form-select" required>
-                        <option value="">Selecione</option>
-                        <option value="vr-sala8">Volta Redonda</option>
-                        <option value="bm-sala3">Barra Mansa</option>
-                        <option value="bp-sala1">Barra do Piraí</option>
-                      </select>
+                    <div class="card-body">
+                      <form id="agendamentoAdminForm">
+                        <div class="mb-3">
+                          <label for="disciplinaAdmin" class="form-label"
+                            >Disciplina</label
+                          >
+                          <select id="disciplinaAdmin" class="form-select" required>
+                            <option value="">Selecione a Disciplina</option>
+                            <option value="ia">IA - MACHINE LEARNING</option>
+                            <option value="sqa">
+                              SOFTWARE QUALITY ASSURANCE
+                            </option>
+                            <option value="uxui">UX/UI MOBILE DEVELOPER</option>
+                            <option value="frontend">FRONT-END DEVELOPER</option>
+                            <option value="backend">BACK-END DEVELOPER</option>
+                            <option value="game">GAME DEVELOPER</option>
+                          </select>
+                        </div>
+                        <div class="mb-3">
+                          <label for="poloAdmin" class="form-label"> Polo </label>
+                          <select id="poloAdmin" class="form-select" required>
+                            <option value="">Selecione o Polo</option>
+                            <option value="vr-sala8">
+                              Polo Volta Redonda
+                            </option>
+                            <option value="bm-sala3">
+                              Polo Barra Mansa
+                            </option>
+                            <option value="resende-sala1">
+                              Polo Resende
+                            </option>
+                          </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                          <label for="dataInicio" class="form-label"> Data Início </label>
+                          
+                          <input type="date" id="dataInicio" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                          <label for="dataFim" class="form-label"> Data Fim </label>
+                          
+                           <input type="date" id="dataFim" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                          <label class="form-label">Horário</label>
+                          <div class="horario-grid">
+                            
+                            <div class="horario-dia-row">
+                              <span>Seg.</span>
+                              <select class="form-select form-select-time" required>
+                                <option value="09:00" selected>09:00</option>
+                                <option value="10:00">10:00</option>
+                                <option value="11:00">11:00</option>
+                                <option value="12:00">12:00</option>
+                                <option value="13:00">13:00</option>
+                                <option value="14:00">14:00</option>
+                                <option value="15:00">15:00</option>
+                                <option value="16:00">16:00</option>
+                                <option value="17:00">17:00</option>
+                                <option value="18:00">18:00</option>
+                                <option value="19:00">19:00</option>
+                              </select>
+                              <select class="form-select form-select-time" required>
+                                <option value="09:00">09:00</option>
+                                <option value="10:00">10:00</option>
+                                <option value="11:00">11:00</option>
+                                <option value="12:00">12:00</option>
+                                <option value="13:00">13:00</option>
+                                <option value="14:00">14:00</option>
+                                <option value="15:00">15:00</option>
+                                <option value="16:00">16:00</option>
+                                <option value="17:00">17:00</option>
+                                <option value="18:00">18:00</option>
+                                <option value="19:00" selected>19:00</option>
+                              </select>
+                              <div class="horario-actions">
+                                <i class="bi bi-calendar-plus"></i>
+                                <i class="bi bi-trash"></i>
+                              </div>
+                            </div>
+                            
+                            <div class="horario-dia-row">
+                              <span>Ter.</span>
+                              <select class="form-select form-select-time" required> <option value="09:00" selected>09:00</option> <option value="10:00">10:00</option> <option value="11:00">11:00</option> <option value="12:00">12:00</option> <option value="13:00">13:00</option> <option value="14:00">14:00</option> <option value="15:00">15:00</option> <option value="16:00">16:00</option> <option value="17:00">17:00</option> <option value="18:00">18:00</option> <option value="19:00">19:00</option> </select>
+                              <select class="form-select form-select-time" required> <option value="09:00">09:00</option> <option value="10:00">10:00</option> <option value="11:00">11:00</option> <option value="12:00">12:00</option> <option value="13:00">13:00</option> <option value="14:00">14:00</option> <option value="15:00">15:00</option> <option value="16:00">16:00</option> <option value="17:00">17:00</option> <option value="18:00">18:00</option> <option value="19:00" selected>19:00</option> </select>
+                              <div class="horario-actions"> <i class="bi bi-calendar-plus"></i> <i class="bi bi-trash"></i> </div>
+                            </div>
+                            <div class="horario-dia-row">
+                              <span>Qua.</span>
+                              <select class="form-select form-select-time" required> <option value="09:00" selected>09:00</option> <option value="10:00">10:00</option> <option value="11:00">11:00</option> <option value="12:00">12:00</option> <option value="13:00">13:00</option> <option value="14:00">14:00</option> <option value="15:00">15:00</option> <option value="16:00">16:00</option> <option value="17:00">17:00</option> <option value="18:00">18:00</option> <option value="19:00">19:00</option> </select>
+                              <select class="form-select form-select-time" required> <option value="09:00">09:00</option> <option value="10:00">10:00</option> <option value="11:00">11:00</option> <option value="12:00">12:00</option> <option value="13:00">13:00</option> <option value="14:00">14:00</option> <option value="15:00">15:00</option> <option value="16:00">16:00</option> <option value="17:00">17:00</option> <option value="18:00">18:00</option> <option value="19:00" selected>19:00</option> </select>
+                              <div class="horario-actions"> <i class="bi bi-calendar-plus"></i> <i class="bi bi-trash"></i> </div>
+                            </div>
+                            <div class="horario-dia-row">
+                              <span>Qui.</span>
+                              <select class="form-select form-select-time" required> <option value="09:00" selected>09:00</option> <option value="10:00">10:00</option> <option value="11:00">11:00</option> <option value="12:00">12:00</option> <option value="13:00">13:00</option> <option value="14:00">14:00</option> <option value="15:00">15:00</option> <option value="16:00">16:00</option> <option value="17:00">17:00</option> <option value="18:00">18:00</option> <option value="19:00">19:00</option> </select>
+                              <select class="form-select form-select-time" required> <option value="09:00">09:00</option> <option value="10:00">10:00</option> <option value="11:00">11:00</option> <option value="12:00">12:00</option> <option value="13:00">13:00</option> <option value="14:00">14:00</option> <option value="15:00">15:00</option> <option value="16:00">16:00</option> <option value="17:00">17:00</option> <option value="18:00">18:00</option> <option value="19:00" selected>19:00</option> </select>
+                              <div class="horario-actions"> <i class="bi bi-calendar-plus"></i> <i class="bi bi-trash"></i> </div>
+                            </div>
+                            <div class="horario-dia-row">
+                              <span>Sex.</span>
+                              <select class="form-select form-select-time" required> <option value="09:00" selected>09:00</option> <option value="10:00">10:00</option> <option value="11:00">11:00</option> <option value="12:00">12:00</option> <option value="13:00">13:00</option> <option value="14:00">14:00</option> <option value="15:00">15:00</option> <option value="16:00">16:00</option> <option value="17:00">17:00</option> <option value="18:00">18:00</option> <option value="19:00">19:00</option> </select>
+                              <select class="form-select form-select-time" required> <option value="09:00">09:00</option> <option value="10:00">10:00</option> <option value="11:00">11:00</option> <option value="12:00">12:00</option> <option value="13:00">13:00</option> <option value="14:00">14:00</option> <option value="15:00">15:00</option> <option value="16:00">16:00</option> <option value="17:00">17:00</option> <option value="18:00">18:00</option> <option value="19:00" selected>19:00</option> </select>
+                              <div class="horario-actions"> <i class="bi bi-calendar-plus"></i> <i class="bi bi-trash"></i> </div>
+                            </div>
+                            <div class="horario-dia-row">
+                              <span>Sab.</span>
+                              <select class="form-select form-select-time" required> <option value="09:00" selected>09:00</option> <option value="10:00">10:00</option> <option value="11:00">11:00</option> <option value="12:00">12:00</option> <option value="13:00">13:00</option> <option value="14:00">14:00</option> <option value="15:00">15:00</option> <option value="16:00">16:00</option> <option value="17:00">17:00</option> <option value="18:00">18:00</option> <option value="19:00">19:00</option> </select>
+                              <select class="form-select form-select-time" required> <option value="09:00">09:00</option> <option value="10:00">10:00</option> <option value="11:00">11:00</option> <option value="12:00" selected>12:00</option> <option value="13:00">13:00</option> <option value="14:00">14:00</option> <option value="15:00">15:00</option> <option value="16:00">16:00</option> <option value="17:00">17:00</option> <option value="18:00">18:00</option> <option value="19:00">19:00</option> </select>
+                              <div class="horario-actions"> <i class="bi bi-calendar-plus"></i> <i class="bi bi-trash"></i> </div>
+                            </div>
+                            
+                          </div>
+                        </div>
+                        
+                        <button
+                          type="submit"
+                          class="btn btn-salvar w-100"
+                        >
+                          Salvar
+                        </button>
+                      </form>
                     </div>
-                    <div class="mb-3"><label>Início</label><input type="date" id="dataInicio" class="form-control" required /></div>
-                    <div class="mb-3"><label>Fim</label><input type="date" id="dataFim" class="form-control" required /></div>
-                    
-                    <button type="submit" class="btn btn-primary w-100">Salvar e Gerar Horários</button>
-                  </form>
+                  </div>
+                </div>
+
+                <div class="col-lg-7">
+                  <div class="card provas-card shadow-sm">
+                    <div class="card-header provas-card-header">
+                      <h4 class="card-title mb-0">
+                        <i class="bi bi-clipboard-check me-2"></i>Provas
+                        Agendadas
+                      </h4>
+                    </div>
+                    <div class="card-body">
+                      
+                      <div id="provasAgendadasList">
+                        
+                        </div>
+                      </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="col-lg-7">
-              <div class="card shadow-sm">
-                <div class="card-header form-card-header"><h4 class="card-title mb-0 text-white">Agendas Ativas</h4></div>
-                <div class="card-body"><div id="provasAgendadasList"></div></div>
-              </div>
+            <div id="dashboard-content" style="display: none">
+              <h2>Dashboard</h2>
+              <p>Conteúdo do Dashboard...</p>
             </div>
-          </div>
+            <div id="disciplinas-content" style="display: none">
+              <h2>Disciplinas</h2>
+              <p>Conteúdo de Disciplinas...</p>
+            </div>
+            <div id="cadastros-content" style="display: none">
+              <h2>Cadastros</h2>
+              <p>Conteúdo de Cadastros...</p>
+            </div>
+<div id="configuracoes-content" style="display: none">
+  <h2 class="mb-4"><i class="bi bi-gear me-2"></i>Configurações do Sistema</h2>
+
+  <div class="row">
+    <!-- CONFIGURAÇÕES GERAIS -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <i class="bi bi-building-gear me-2"></i>Informações Institucionais
+        </div>
+        <div class="card-body">
+          <form id="configFormGeral">
+            <div class="mb-3">
+              <label for="nomeInstituicao" class="form-label">Nome da Instituição</label>
+              <input type="text" id="nomeInstituicao" class="form-control" placeholder="Centro Universitário UNIFAA" />
+            </div>
+            <div class="mb-3">
+              <label for="semestreAtivo" class="form-label">Semestre Letivo Ativo</label>
+              <select id="semestreAtivo" class="form-select">
+                <option value="2025.1">2025.1</option>
+                <option value="2025.2">2025.2</option>
+                <option value="2026.1">2026.1</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="emailSuporte" class="form-label">E-mail de Suporte</label>
+              <input type="email" id="emailSuporte" class="form-control" placeholder="suporte@unifaa.edu.br" />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-save me-2"></i>Salvar Alterações
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES DE SISTEMA -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+          <i class="bi bi-sliders me-2"></i>Preferências do Sistema
+        </div>
+        <div class="card-body">
+          <form id="configFormSistema">
+            <div class="mb-3">
+              <label for="temaSite" class="form-label">Tema do Sistema</label>
+              <select id="temaSite" class="form-select">
+                <option value="claro">Claro</option>
+                <option value="escuro">Escuro</option>
+                <option value="automático">Automático (baseado no sistema)</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="idiomaSite" class="form-label">Idioma</label>
+              <select id="idiomaSite" class="form-select">
+                <option value="pt-BR">Português (Brasil)</option>
+                <option value="en-US">Inglês</option>
+                <option value="es-ES">Espanhol</option>
+              </select>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="notificacoesEmail" checked />
+              <label class="form-check-label" for="notificacoesEmail">
+                Receber notificações por e-mail
+              </label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="modoManutencao" />
+              <label class="form-check-label text-danger fw-bold" for="modoManutencao">
+                Ativar modo de manutenção
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-secondary w-100">
+              <i class="bi bi-save me-2"></i>Aplicar Configurações
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES DE PERMISSÕES -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <i class="bi bi-shield-lock me-2"></i>Gerenciamento de Permissões
+        </div>
+        <div class="card-body">
+          <table class="table table-striped align-middle">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Função</th>
+                <th>Status</th>
+                <th class="text-end">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>admin@unifaa.edu.br</td>
+                <td>Administrador</td>
+                <td><span class="badge bg-success">Ativo</span></td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil-square"></i></button>
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>professor@unifaa.edu.br</td>
+                <td>Professor</td>
+                <td><span class="badge bg-success">Ativo</span></td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil-square"></i></button>
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>estagiario@unifaa.edu.br</td>
+                <td>Assistente</td>
+                <td><span class="badge bg-secondary">Inativo</span></td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil-square"></i></button>
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-dark mt-3">
+            <i class="bi bi-person-plus me-2"></i>Adicionar Usuário
+          </button>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="js/api-config.js"></script>
-  <script src="js/admin.js"></script>
-  <script>function logout() { localStorage.clear(); window.location.href = 'portal.html'; }</script>
-</body>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+        <div class="container">
+            <p class="text-center text-muted" style="padding: 20px; font-size: 10px;">
+                &copy; 2025 UNIFAA - Desenvolvido por Alunos.
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/admin.js"></script>
+  </body>
 </html>

@@ -1,73 +1,81 @@
-const PRESETS = {
-  aluno: 'E123',
-  administrativo: 'A123',
-  polo: 'P123'
-};
-const DEFAULT_PASSWORD = '123';
+// js/portal.js
 
-// elementos
 const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
 const loginForm = document.getElementById('loginForm');
 const loginError = document.getElementById('loginError');
 const navButtons = document.querySelectorAll('.nav-button');
 
-// estado inicial
 let selectedRole = document.querySelector('.nav-button.active')?.dataset.role || 'aluno';
 
-// função para aplicar role e preencher username
 function applyRole(role) {
   selectedRole = role;
   navButtons.forEach(b => b.classList.toggle('active', b.dataset.role === role));
-  usernameInput.value = PRESETS[role];
+  usernameInput.value = '';
   passwordInput.value = '';
   hideError();
 }
 
-// listeners dos botões
 navButtons.forEach(btn => {
   btn.addEventListener('click', function () {
     applyRole(this.dataset.role);
   });
 });
 
-// inicializa
-document.addEventListener('DOMContentLoaded', () => applyRole(selectedRole));
-
 function showError(msg) {
   loginError.textContent = msg;
   loginError.style.display = 'block';
 }
+
 function hideError() {
   loginError.textContent = '';
   loginError.style.display = 'none';
 }
 
-// submit com validação
-loginForm.addEventListener('submit', function (e) {
+loginForm.addEventListener('submit', async function (e) {
   e.preventDefault();
   hideError();
 
-  const username = usernameInput.value.trim();
+  const email = usernameInput.value.trim();
   const password = passwordInput.value;
 
-  if (password !== DEFAULT_PASSWORD) {
-    showError('Senha incorreta. Use a senha padrão "123".');
+  if (!email || !password) {
+    showError('Preencha todos os campos.');
     return;
   }
 
-  const expected = PRESETS[selectedRole];
-  if (username !== expected) {
-    showError(`Usuário inválido para o perfil selecionado. Esperado: ${expected}`);
-    return;
-  }
+  const btn = loginForm.querySelector('button');
+  const originalText = btn.textContent;
+  btn.textContent = 'Entrando...';
+  btn.disabled = true;
 
-  // redireciona
-  if (selectedRole === 'aluno') {
-    window.location.href = 'dashboard.html';
-  } else if (selectedRole === 'administrativo') {
-    window.location.href = 'admin.html';
-  } else if (selectedRole === 'polo') {
-    window.location.href = 'dashboardpolo.html';
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userId', data.id);
+      localStorage.setItem('userName', data.name);
+      localStorage.setItem('userType', data.type);
+
+      if (data.type === 'STUDENT') window.location.href = 'dashboard.html';
+      else if (data.type === 'ADMIN') window.location.href = 'admin.html';
+      else if (data.type === 'POLO') window.location.href = 'dashboardpolo.html';
+      else showError('Usuário desconhecido.');
+
+    } else {
+      showError('Credenciais inválidas.');
+    }
+  } catch (error) {
+    console.error(error);
+    showError('Erro de conexão com o servidor.');
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
   }
 });

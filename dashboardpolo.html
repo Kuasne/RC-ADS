@@ -6,7 +6,7 @@
   <title>Área do Polo - Visualização e Relatórios</title>
   <link rel="stylesheet" href="./css/polo.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
+  <!-- <style>
     /* ===== Modal do Filtro ===== */
     .filter-modal {
       display: none;
@@ -74,7 +74,7 @@
       background: #ccc;
       color: black;
     }
-  </style>
+  </style> -->
 </head>
 <body>
   <div class="header">
@@ -84,7 +84,7 @@
     </div>
     <div class="header-right">
       <i class="fas fa-user-circle"></i>
-      <span>Jamilly do Amaral - Polo Barra Mansa</span>
+      <span>Polo</span>
       <i class="fas fa-chevron-down"></i>
     </div>
   </div>
@@ -108,9 +108,9 @@
           <h1>Visualização e Relatórios</h1>
           <div class="action-buttons">
             <input type="text" id="searchInput" placeholder="Pesquisar aluno ou disciplina...">
-            <button class="filter-button" id="openFilterBtn">
+            <!-- <button class="filter-button" id="openFilterBtn">
               <i class="fas fa-filter"></i> Filtrar
-            </button>
+            </button> -->
             <button class="print-button">
               <i class="fas fa-print"></i> Imprimir Relatório
             </button>
@@ -128,7 +128,6 @@
                 <tr>
                   <th>Alunos</th>
                   <th>Disciplinas</th>
-                  <th>Professores</th>
                   <th>Data/Hora</th>
                   <th>Polo</th>
                   <th>Status</th>
@@ -198,7 +197,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE FILTRO -->
+  <!-- MODAL DE FILTRO
   <div id="filterModal" class="filter-modal">
     <div class="filter-modal-content">
       <h3>Filtrar por Polo</h3>
@@ -213,7 +212,7 @@
         <button class="btn-cancel" id="cancelFilterBtn">Cancelar</button>
       </div>
     </div>
-  </div>
+  </div> -->
 
     <script>
     // ===== Alternar abas =====
@@ -289,7 +288,6 @@
 
           const aluno = b.studentName || '';
           const disciplina = b.subjectName || '';
-          const professor = ''; // não temos esta informação no backend
           const dataHora = formatarDataHora(b);
           const polo = b.poloName || '';
           const status = b.status || 'CONFIRMED';
@@ -297,7 +295,6 @@
           tr.innerHTML = `
             <td>${aluno}</td>
             <td>${disciplina}</td>
-            <td>${professor}</td>
             <td>${dataHora}</td>
             <td>${polo}</td>
             <td>${status}</td>
@@ -356,13 +353,19 @@
 
       filterModal.style.display = 'none';
     });
+    
+    const printBtn = document.querySelector('.print-button');
+    printBtn.addEventListener('click', () => {
+      window.print();
+    });
 
     // ===== Simulação de salvamento das configurações do Polo =====
     document.getElementById('configPoloForm').addEventListener('submit', e => {
       e.preventDefault();
-      alert('Configurações do Polo salvas com sucesso!');
+      Swal.fire('Configurações do Polo salvas com sucesso!');
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 </html>

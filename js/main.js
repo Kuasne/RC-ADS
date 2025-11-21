@@ -272,7 +272,7 @@ async function carregarMeusAgendamentos() {
             container.innerHTML = '';
 
             bookings.forEach(b => {
-                const nomeDisc = DISCIPLINAS[b.subjectId] || 'Disciplina';
+                const nomeDisc = b.subjectName || DISCIPLINAS[b.subjectId] || 'Disciplina';
                 const dataF = formatarDataPTBR(b.date);
                 const horaF = b.time ? b.time.substring(0, 5) : '--:--';
                 

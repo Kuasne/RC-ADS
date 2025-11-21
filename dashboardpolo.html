@@ -215,7 +215,7 @@
     </div>
   </div>
 
-  <script>
+    <script>
     // ===== Alternar abas =====
     const sidebarItems = document.querySelectorAll('.sidebar-item');
     const sections = document.querySelectorAll('.content-section');
@@ -229,14 +229,121 @@
       });
     });
 
+    // ===== Helper de autenticação (Polo) =====
+    function getAuthHeaders() {
+      const token = localStorage.getItem('authToken');
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+    }
+
+    function formatarDataHora(b) {
+      if (!b.date && !b.time) {
+        return '';
+      }
+      const data = b.date || '';
+      const hora = b.time ? b.time.substring(0, 5) : '';
+      return `${data} ${hora}`.trim();
+    }
+
+    async function carregarAgendamentosPolo() {
+      const tbody = document.getElementById('poloReportTableBody');
+
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6">Carregando agendamentos...</td>
+        </tr>
+      `;
+
+      try {
+        const resp = await fetch('http://localhost:8080/bookings/polo', {
+          method: 'GET',
+          headers: getAuthHeaders()
+        });
+
+        if (!resp.ok) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6">Erro ao carregar agendamentos.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        const bookings = await resp.json();
+
+        if (!bookings || bookings.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6">Nenhum agendamento encontrado para hoje.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = '';
+
+        bookings.forEach(b => {
+          const tr = document.createElement('tr');
+
+          const aluno = b.studentName || '';
+          const disciplina = b.subjectName || '';
+          const professor = ''; // não temos esta informação no backend
+          const dataHora = formatarDataHora(b);
+          const polo = b.poloName || '';
+          const status = b.status || 'CONFIRMED';
+
+          tr.innerHTML = `
+            <td>${aluno}</td>
+            <td>${disciplina}</td>
+            <td>${professor}</td>
+            <td>${dataHora}</td>
+            <td>${polo}</td>
+            <td>${status}</td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error(e);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6">Erro de conexão ao carregar agendamentos.</td>
+          </tr>
+        `;
+      }
+    }
+
+    // Garante que só POLO acesse esta página e carrega os dados
+    (function initPoloDashboard() {
+      const raw = localStorage.getItem('userData');
+      if (!raw) {
+        window.location.href = 'portal.html';
+        return;
+      }
+      const userData = JSON.parse(raw);
+      if (userData.type !== 'POLO') {
+        window.location.href = 'portal.html';
+        return;
+      }
+
+      carregarAgendamentosPolo();
+    })();
+
     // ===== Modal de filtro =====
     const filterModal = document.getElementById('filterModal');
-    const openFilterBtn = document.getElementById('openFilterBtn');
-    const applyFilterBtn = document.getElementById('applyFilterBtn');
+    const filterButton = document.getElementById('openFilterBtn');
     const cancelFilterBtn = document.getElementById('cancelFilterBtn');
+    const applyFilterBtn = document.getElementById('applyFilterBtn');
 
-    openFilterBtn.addEventListener('click', () => filterModal.style.display = 'flex');
-    cancelFilterBtn.addEventListener('click', () => filterModal.style.display = 'none');
+    filterButton.addEventListener('click', () => {
+      filterModal.style.display = 'flex';
+    });
+
+    cancelFilterBtn.addEventListener('click', () => {
+      filterModal.style.display = 'none';
+    });
 
     applyFilterBtn.addEventListener('click', () => {
       const selected = document.querySelector('input[name="poloFiltro"]:checked').value;
@@ -250,11 +357,12 @@
       filterModal.style.display = 'none';
     });
 
-    // ===== Simulação de salvamento =====
+    // ===== Simulação de salvamento das configurações do Polo =====
     document.getElementById('configPoloForm').addEventListener('submit', e => {
       e.preventDefault();
       alert('Configurações do Polo salvas com sucesso!');
     });
   </script>
+
 </body>
 </html>

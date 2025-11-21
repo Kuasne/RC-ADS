@@ -44,6 +44,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 3. Configurar Listeners do Formulário
     setupFormListeners();
+
+    // 4. Configurar Listener de Cancelamento
+    setupCancelBookingListener();
 });
 
 // --- FUNÇÕES DE INTEGRAÇÃO (API) ---
@@ -274,16 +277,30 @@ async function carregarMeusAgendamentos() {
                 const horaF = b.time ? b.time.substring(0, 5) : '--:--';
                 
                 const html = `
-                    <div class="card mb-2 shadow-sm border-start border-4 border-primary">
-                        <div class="card-body py-2">
+                    <div class="card mb-2 shadow-sm border-start border-4 border-primary" data-booking-id="${b.id}">
+                        <div class="card-body py-2 d-flex justify-content-between align-items-center">
+                        <div>
                             <h6 class="card-title mb-1 fw-bold">${nomeDisc}</h6>
                             <p class="card-text small text-muted mb-1">
-                                <i class="bi bi-calendar-event me-1"></i> ${dataF} às ${horaF}
+                            <i class="bi bi-calendar-event me-1"></i> ${dataF} às ${horaF}
                             </p>
-                            <span class="badge bg-success">Confirmado</span>
-                            </div>
+                            <span class="badge bg-success">${b.status || 'Confirmado'}</span>
+                        </div>
+
+                        <!-- Botão de apagar IGUAL ao admin -->
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-outline-danger btn-cancel-booking"
+                            data-booking-id="${b.id}"
+                            title="Cancelar agendamento"
+                        >
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        </div>
                     </div>
-                `;
+                    `;
+
+
                 container.insertAdjacentHTML('beforeend', html);
             });
             
@@ -297,6 +314,46 @@ async function carregarMeusAgendamentos() {
     } catch (err) {
         console.error(err);
     }
+}
+function setupCancelBookingListener() {
+    const container = document.getElementById('provasAgendadas');
+    if (!container) return;
+
+    container.addEventListener('click', async function (e) {
+        const btn = e.target.closest('.btn-cancel-booking');
+        if (!btn) return;
+
+        const bookingId = btn.getAttribute('data-booking-id');
+        if (!bookingId) return;
+
+        const confirmar = confirm('Tem certeza que deseja cancelar este agendamento?');
+        if (!confirmar) return;
+
+        try {
+            const resp = await fetch(`http://localhost:8080/bookings/${bookingId}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            });
+
+            if (resp.status === 204) {
+                // Recarrega a lista a partir da API
+                await carregarMeusAgendamentos();
+                alert('Agendamento cancelado com sucesso.');
+            } else {
+                let msg = 'Não foi possível cancelar o agendamento.';
+                try {
+                    const err = await resp.json();
+                    msg = err.detail || err.message || msg;
+                } catch (_) {
+                    // se não tiver body, mantém a msg padrão
+                }
+                alert(msg);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Erro de conexão ao cancelar o agendamento.');
+        }
+    });
 }
 
 // --- UTILITÁRIOS ---

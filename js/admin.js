@@ -114,13 +114,44 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       const scheduleCriado = await response.json();
+      
+      // 4. Gerar os Horários (Slots) com base no GRID
 
-      // 4. Gerar os Horários (Slots) Automaticamente
+      const diaMap = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
+      const rows = document.querySelectorAll('.horario-grid .horario-dia-row');
+      const customConfig = [];
+
+      rows.forEach((row, index) => {
+        // se a linha estiver "desativada", pula
+        if (row.classList.contains('dia-desativado')) return;
+
+        const selects = row.querySelectorAll('select.form-select-time');
+        if (selects.length < 2) return;
+
+        const start = selects[0].value; // "14:00"
+        const end = selects[1].value;   // "19:00"
+
+        customConfig.push({
+          day: diaMap[index], // 0 = seg = mon, 1 = ter = tue...
+          start: start,
+          end: end
+        });
+      });
+
+      // Chama o endpoint custom do backend
+      await fetch(`http://localhost:8080/api/schedules/${scheduleCriado.id}/timeslots/custom`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(customConfig)
+      });
+
+      /* // 4. Gerar os Horários (Slots) Automaticamente
       // Esse passo é necessário conforme a regra de negócio do backend
       await fetch(`http://localhost:8080/api/schedules/${scheduleCriado.id}/timeslots/bulk`, {
           method: 'POST',
           headers: getAuthHeaders()
-      });
+      }); */
 
       // 5. Atualizar a Tela (Visual)
       // Adaptamos a resposta da API para o formato que sua função de lista espera

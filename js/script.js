@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 sidebarItems.forEach(i => i.classList.remove('active'));
                 this.classList.add('active');
                 if(this.textContent.includes('Configurações')){
-                    alert('Aqui você poderia abrir as configurações (tema, polo, etc).');
+                    Swal.fire('Aqui você poderia abrir as configurações (tema, polo, etc).');
                 }
             });
         });

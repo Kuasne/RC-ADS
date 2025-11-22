@@ -258,7 +258,7 @@
     // Simulação de salvamento de configurações
     document.getElementById('formConfiguracoesAluno').addEventListener('submit', function (e) {
       e.preventDefault();
-      alert('Configurações salvas com sucesso!');
+      Swal.fire('Configurações salvas com sucesso!');
       const modal = bootstrap.Modal.getInstance(document.getElementById('configuracoesModal'));
       modal.hide();
     });

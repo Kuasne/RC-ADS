@@ -101,7 +101,7 @@ function setupFormListeners() {
         const poloId = userData.poloId;
 
         if (!poloId) {
-            alert("Erro: Seu usuário não está vinculado a nenhum Polo. Entre em contato com a secretaria.");
+            Swal.fire("Erro: Seu usuário não está vinculado a nenhum Polo. Entre em contato com a secretaria.");
             return;
         }
 
@@ -121,9 +121,9 @@ function setupFormListeners() {
                     dataInput.min = currentSchedule.startDate;
                     dataInput.max = currentSchedule.endDate;
                     
-                    alert(`Disciplina disponível de ${formatarDataPTBR(currentSchedule.startDate)} até ${formatarDataPTBR(currentSchedule.endDate)}`);
+                    Swal.fire(`Disciplina disponível de ${formatarDataPTBR(currentSchedule.startDate)} até ${formatarDataPTBR(currentSchedule.endDate)}`);
                 } else {
-                    alert('Não há agenda cadastrada para esta disciplina no seu polo.');
+                    Swal.fire('Não há agenda cadastrada para esta disciplina no seu polo.');
                 }
             }
         } catch (err) {
@@ -147,7 +147,7 @@ function setupFormListeners() {
         const dayStr = diasSemana[dataObj.getDay()];
 
         if (dayStr === 'sun') {
-            alert('Não há agendamentos aos domingos.');
+            Swal.fire('Não há agendamentos aos domingos.');
             horarioSelect.innerHTML = '<option value="">Selecione o horário</option>';
             return;
         }
@@ -192,7 +192,7 @@ async function enviarAgendamento() {
     const horario = document.getElementById('horario').value;
 
     if (!disciplinaId || !data || !horario) {
-        alert('Preencha todos os campos!');
+        Swal.fire('Preencha todos os campos!');
         return;
     }
 
@@ -203,7 +203,7 @@ async function enviarAgendamento() {
     const studentId = userData.id;
 
     if (!poloId) {
-        alert("Erro: Polo não identificado.");
+        Swal.fire("Erro: Polo não identificado.");
         return;
     }
 
@@ -225,11 +225,11 @@ async function enviarAgendamento() {
         if (!resp.ok) {
             const err = await resp.json();
             // Mostra mensagem de erro vinda do backend (ex: "Horário já lotado")
-            alert(`Erro: ${err.detail || err.message || 'Falha ao agendar'}`);
+            Swal.fire(`Erro: ${err.detail || err.message || 'Falha ao agendar'}`);
             return;
         }
 
-        alert('Agendamento realizado com sucesso!');
+        Swal.fire('Agendamento realizado com sucesso!');
         // Limpa form
         document.getElementById('formAgendamento').reset();
         
@@ -243,7 +243,7 @@ async function enviarAgendamento() {
 
     } catch (err) {
         console.error(err);
-        alert('Erro de conexão.');
+        Swal.fire('Erro de conexão.');
     }
 }
 
@@ -338,7 +338,7 @@ function setupCancelBookingListener() {
             if (resp.status === 204) {
                 // Recarrega a lista a partir da API
                 await carregarMeusAgendamentos();
-                alert('Agendamento cancelado com sucesso.');
+                Swal.fire('Agendamento cancelado com sucesso.');
             } else {
                 let msg = 'Não foi possível cancelar o agendamento.';
                 try {
@@ -347,11 +347,11 @@ function setupCancelBookingListener() {
                 } catch (_) {
                     // se não tiver body, mantém a msg padrão
                 }
-                alert(msg);
+                Swal.fire(msg);
             }
         } catch (error) {
             console.error(error);
-            alert('Erro de conexão ao cancelar o agendamento.');
+            Swal.fire('Erro de conexão ao cancelar o agendamento.');
         }
     });
 }

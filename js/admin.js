@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Validação
     const primeiroDiaAtivo = form.querySelector('.horario-dia-row:not(.dia-desativado)');
     if (!primeiroDiaAtivo) {
-      alert('Você deve habilitar pelo menos um dia da semana para salvar.');
+      Swal.fire('Você deve habilitar pelo menos um dia da semana para salvar.');
       return;
     }
 
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (!response.ok) {
         const erro = await response.json();
-        alert(`Erro ao salvar: ${erro.message || 'Verifique os dados'}`);
+        Swal.fire(`Erro ao salvar: ${erro.message || 'Verifique os dados'}`);
         return;
       }
 
@@ -174,11 +174,11 @@ document.addEventListener('DOMContentLoaded', function () {
         row.querySelectorAll('select').forEach(s => s.disabled = false);
       });
 
-      alert('Agendamento criado com sucesso!');
+      Swal.fire('Agendamento criado com sucesso!');
 
     } catch (error) {
       console.error('Erro:', error);
-      alert('Erro de conexão com o servidor.');
+      Swal.fire('Erro de conexão com o servidor.');
     };
   });
 
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     if (!response.ok) {
-        alert('Erro ao salvar agendamento!');
+        Swal.fire('Erro ao salvar agendamento!');
     }
     // Opcional: recarregar a lista após salvar
     carregarProvasSalvas(); 
@@ -291,7 +291,7 @@ async function removerProvaDoStorage(idParaRemover) {
     });
 
     if (!response.ok) {
-      alert('Erro ao excluir schedule.');
+      Swal.fire('Erro ao excluir schedule.');
     }
     // Se deu certo (status 204), o item já foi removido da tela
     // no 'listaProvas.addEventListener('click', ...)'

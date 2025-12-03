@@ -306,6 +306,10 @@ async function carregarMeusAgendamentos() {
             
             // Atualiza contadores
             document.getElementById('totalProvas').textContent = bookings.length;
+            
+            // Atualiza próxima prova - mostra a quantidade de provas agendadas
+            document.getElementById('proximaProva').textContent = bookings.length;
+            
             // Atualiza contador de disciplinas únicas
             const discUnicas = new Set(bookings.map(b => b.subjectId));
             const divCount = document.getElementById('disciplinasCount');
